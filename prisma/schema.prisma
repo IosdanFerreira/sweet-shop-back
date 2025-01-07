@@ -23,7 +23,7 @@ model User {
   first_name               String
   last_name                String
   email                    String   @unique
-  password                 String   @unique
+  password                 String
   phone                    String
   birth_date               String?
   gender                   Gender
@@ -42,4 +42,9 @@ model User {
   identification_number    String?
   identification_document  String?
   privacy_consent          Boolean?
+  deleted                  Boolean  @default(false)
+  created_at               DateTime @default(now())
+  updated_at               DateTime @default(now())
+
+  @@map("users")
 }
