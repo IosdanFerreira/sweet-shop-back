@@ -13,19 +13,61 @@ export class UserRepository implements UserRepositoryInterface {
     });
   }
 
-  findByEmail(email: string): Promise<User> {
-    throw new Error('Method not implemented.');
+  async findByEmail(email: string): Promise<User> {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        email,
+        AND: {
+          deleted: false,
+        },
+      },
+    });
+
+    return user;
   }
 
-  findById(id: number): Promise<User> {
-    throw new Error('Method not implemented.');
+  async findById(id: number): Promise<User> {
+    const user = await this._get(id);
+
+    return user;
   }
 
-  update(id: number, updateDto: UpdateUserDto): Promise<void> {
-    throw new Error('Method not implemented.');
+  async update(id: number, updateDto: UpdateUserDto): Promise<void> {
+    await this.prisma.user.update({
+      where: {
+        id,
+        AND: {
+          deleted: false,
+        },
+      },
+      data: updateDto,
+    });
   }
 
-  remove(id: number): Promise<void> {
-    throw new Error('Method not implemented.');
+  async remove(id: number): Promise<void> {
+    await this.prisma.user.update({
+      where: {
+        id,
+        AND: {
+          deleted: false,
+        },
+      },
+      data: {
+        deleted: true,
+      },
+    });
+  }
+
+  protected async _get(id: number): Promise<User> {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id,
+        AND: {
+          deleted: false,
+        },
+      },
+    });
+
+    return user;
   }
 }
