@@ -1,8 +1,8 @@
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
-import { User } from '../entities/user.entity';
 import { UserRepositoryInterface } from './user.repository.interface';
+import { UserOutput } from '../dto/user-output.dto';
 
 export class UserRepository implements UserRepositoryInterface {
   constructor(private readonly prisma: PrismaService) {}
@@ -13,7 +13,7 @@ export class UserRepository implements UserRepositoryInterface {
     });
   }
 
-  async findByEmail(email: string): Promise<User> {
+  async findByEmail(email: string): Promise<UserOutput> {
     const user = await this.prisma.user.findUnique({
       where: {
         email,
@@ -21,12 +21,40 @@ export class UserRepository implements UserRepositoryInterface {
           deleted: false,
         },
       },
+      select: {
+        id: true,
+        first_name: true,
+        last_name: true,
+        email: true,
+        password: false,
+        phone: true,
+        gender: true,
+        birth_date: true,
+        address: true,
+        occupation: true,
+        emergency_contact_name: true,
+        emergency_contact_number: true,
+        primary_physician: true,
+        insurance_provider: true,
+        insurance_policy_number: true,
+        allergies: true,
+        current_medication: true,
+        family_medical_history: true,
+        past_medical_history: true,
+        identification_type: true,
+        identification_number: true,
+        identification_document: true,
+        privacy_consent: true,
+        deleted: false,
+        created_at: true,
+        updated_at: true,
+      },
     });
 
     return user;
   }
 
-  async findById(id: number): Promise<User> {
+  async findById(id: number): Promise<UserOutput> {
     const user = await this._get(id);
 
     return user;
@@ -58,13 +86,41 @@ export class UserRepository implements UserRepositoryInterface {
     });
   }
 
-  protected async _get(id: number): Promise<User> {
+  protected async _get(id: number): Promise<UserOutput> {
     const user = await this.prisma.user.findUnique({
       where: {
         id,
         AND: {
           deleted: false,
         },
+      },
+      select: {
+        id: true,
+        first_name: true,
+        last_name: true,
+        email: true,
+        password: false,
+        phone: true,
+        gender: true,
+        birth_date: true,
+        address: true,
+        occupation: true,
+        emergency_contact_name: true,
+        emergency_contact_number: true,
+        primary_physician: true,
+        insurance_provider: true,
+        insurance_policy_number: true,
+        allergies: true,
+        current_medication: true,
+        family_medical_history: true,
+        past_medical_history: true,
+        identification_type: true,
+        identification_number: true,
+        identification_document: true,
+        privacy_consent: true,
+        deleted: false,
+        created_at: true,
+        updated_at: true,
       },
     });
 

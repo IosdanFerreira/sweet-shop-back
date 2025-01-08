@@ -1,22 +1,40 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { ConflictException, Inject, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserRepositoryInterface } from './repositories/user.repository.interface';
-import { CreateUserValidatorFactory } from './validators/create-user.validator';
+import { HashProviderInterface } from 'src/shared/providers/hash-provider/hash-provider.interface';
 
 @Injectable()
 export class UserService {
   constructor(
     @Inject('UserRepositoryInterface')
     private readonly userRepository: UserRepositoryInterface,
+
+    @Inject('HashProviderInterface')
+    private readonly hashProvider: HashProviderInterface,
   ) {}
 
   async createUser(createUserDto: CreateUserDto) {
-    const inputValidator = CreateUserValidatorFactory.create();
+    const userAlreadyExists = await this.userRepository.findByEmail(
+      createUserDto.email,
+    );
 
-    inputValidator.validate(createUserDto);
+    if (userAlreadyExists) {
+      throw new ConflictException(
+        'Já existe um usuário com esse endereço de email',
+      );
+    }
 
-    return await this.userRepository.insert(createUserDto);
+    const hashedPassword = await this.hashProvider.generateHash(
+      createUserDto.password,
+    );
+
+    const newUser: CreateUserDto = {
+      ...createUserDto,
+      password: hashedPassword,
+    };
+
+    return await this.userRepository.insert(newUser);
   }
 
   async getUserById(id: number) {
