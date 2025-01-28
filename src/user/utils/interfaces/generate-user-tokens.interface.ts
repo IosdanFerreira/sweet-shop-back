@@ -1,8 +1,8 @@
 import { User } from 'src/user/entities/user.entity';
 
 export interface tokensOutput {
-  accessToken: string;
-  refreshToken: string;
+  access_token: string;
+  refresh_token: string;
 }
 
 export interface generateTokensInterface {

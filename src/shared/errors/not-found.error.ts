@@ -1,6 +1,5 @@
 export class NotFoundError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'NotFoundError';
+  constructor(public errors: Array<{ property: string; message: string }>) {
+    super();
   }
 }

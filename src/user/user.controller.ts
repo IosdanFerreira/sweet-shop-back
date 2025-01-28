@@ -17,7 +17,6 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { SignInDto } from './dto/signin.dto';
 import { isPublic } from 'src/shared/decorators/is-public.decorator';
 import { RefreshJwtAuthGuard } from 'src/shared/auth/guards/refresh-jwt-auth.guard';
-import { LocalAuthGuard } from 'src/shared/auth/guards/local-auth.guard';
 
 @Controller('user')
 export class UserController {
@@ -33,7 +32,6 @@ export class UserController {
   @Post('login')
   @isPublic()
   @HttpCode(HttpStatus.OK)
-  @UseGuards(LocalAuthGuard)
   login(@Body() signInDto: SignInDto) {
     return this.userService.signin(signInDto);
   }
@@ -42,7 +40,7 @@ export class UserController {
   @isPublic()
   @HttpCode(HttpStatus.OK)
   @UseGuards(RefreshJwtAuthGuard)
-  async refreshToken(@Request() req) {
+  async refreshToken(@Request() req: any) {
     return this.userService.refresh(req.user);
   }
 

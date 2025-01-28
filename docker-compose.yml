@@ -4,7 +4,7 @@ services:
     entrypoint: /home/node/app/.docker/entrypoint.sh
     container_name: healthcare-back-app
     ports:
-      - '3000:3000'
+      - '3001:3001'
       - '5555:5555'
     volumes:
       - .:/home/node/app

@@ -1,9 +1,19 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { BadRequestException, ValidationPipe } from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common';
+import { BadRequestInterceptor } from './shared/interceptors/bad-request.interceptor';
+import { ConflictInterceptor } from './shared/interceptors/conflict.interceptor';
+import { NotFoundInterceptor } from './shared/interceptors/not-found.interceptor';
+import { BadRequestError } from './shared/errors/bad-request.error';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.useGlobalInterceptors(
+    new BadRequestInterceptor(),
+    new ConflictInterceptor(),
+    new NotFoundInterceptor(),
+  );
+
   app.useGlobalPipes(
     new ValidationPipe({
       exceptionFactory: (errors) => {
@@ -11,7 +21,8 @@ async function bootstrap() {
           property: error.property,
           message: error.constraints[Object.keys(error.constraints)[0]],
         }));
-        return new BadRequestException(result);
+
+        return new BadRequestError([...result]);
       },
       whitelist: true,
       forbidNonWhitelisted: true,
@@ -19,6 +30,6 @@ async function bootstrap() {
     }),
   );
 
-  await app.listen(3000);
+  await app.listen(3001);
 }
 bootstrap();

@@ -30,6 +30,6 @@ export class CreateUserDto {
 
   @IsNotEmpty({ message: 'Senha é obrigatório' })
   @IsString({ message: 'phone deve ser do tipo string' })
-  @Matches(/^[0-9]{11}$/, { message: 'Telefone inválido' })
+  @Matches(/^\(\d{2}\) \d{5}-\d{4}$/, { message: 'Telefone inválido' })
   phone: string;
 }

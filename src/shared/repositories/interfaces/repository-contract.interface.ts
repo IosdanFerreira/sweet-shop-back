@@ -1,5 +1,5 @@
 export interface RepositoryContract<T> {
-  insert(createDto: any): Promise<void>;
+  insert(createDto: any): Promise<T>;
   findAll(
     page: number,
     limit: number,
