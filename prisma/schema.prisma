@@ -19,32 +19,33 @@ enum Gender {
 }
 
 model User {
-  id                       Int      @id @default(autoincrement())
-  first_name               String
-  last_name                String
-  email                    String   @unique
-  password                 String
-  phone                    String
-  birth_date               String?
-  gender                   Gender?
-  address                  String?
-  occupation               String?
-  emergency_contact_name   String?
-  emergency_contact_number String?
-  primary_physician        String?
-  insurance_provider       String?
-  insurance_policy_number  String?
-  allergies                String?
-  current_medication       String?
-  family_medical_history   String?
-  past_medical_history     String?
-  identification_type      String?
-  identification_number    String?
-  identification_document  String?
-  privacy_consent          Boolean?
-  deleted                  Boolean  @default(false)
-  created_at               DateTime @default(now())
-  updated_at               DateTime @default(now())
+  id              Int      @id @default(autoincrement())
+  first_name      String
+  last_name       String
+  email           String   @unique
+  password        String
+  phone           String
+  address         String?
+  privacy_consent Boolean
+  deleted         Boolean  @default(false)
+  created_at      DateTime @default(now())
+  updated_at      DateTime @default(now())
+
+  role_id Int
+  role    Role @relation(fields: [role_id], references: [id])
 
   @@map("users")
+}
+
+model Role {
+  id        Int     @id @default(autoincrement())
+  role_name String  @unique
+  deleted   Boolean @default(false)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  User User[]
+
+  @@map("roles")
 }

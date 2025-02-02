@@ -1,4 +1,12 @@
-import { IsEmail, IsNotEmpty, IsString, Matches } from 'class-validator';
+import {
+  Equals,
+  IsBoolean,
+  IsEmail,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  Matches,
+} from 'class-validator';
 
 export class CreateUserDto {
   @IsNotEmpty({ message: 'Nome é obrigatório' })
@@ -32,4 +40,13 @@ export class CreateUserDto {
   @IsString({ message: 'phone deve ser do tipo string' })
   @Matches(/^\(\d{2}\) \d{5}-\d{4}$/, { message: 'Telefone inválido' })
   phone: string;
+
+  @IsNotEmpty({ message: 'Aceitar os termos de privacidade é obrigatório' })
+  @IsBoolean({ message: 'phone privacy_consent ser do tipo boolean' })
+  @Equals(true, { message: 'Aceitar os termos de privacidade é obrigatório' })
+  privacy_consent: boolean;
+
+  @IsNumber({}, { message: 'role_id deve ser um string' })
+  @IsNotEmpty({ message: 'O tipo de usuário deve ser informado' })
+  role_id: number;
 }
