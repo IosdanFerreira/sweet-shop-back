@@ -3,7 +3,6 @@ import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { UserRepositoryInterface } from './user.repository.interface';
 import { IUser } from '../interfaces/user.interface';
-import { User } from '@prisma/client';
 
 export class UserRepository implements UserRepositoryInterface {
   constructor(private readonly prisma: PrismaService) {}
@@ -20,6 +19,12 @@ export class UserRepository implements UserRepositoryInterface {
         phone: true,
         address: true,
         privacy_consent: true,
+        role: {
+          select: {
+            id: true,
+            role_name: true,
+          },
+        },
         deleted: false,
         created_at: true,
         updated_at: true,
@@ -29,13 +34,33 @@ export class UserRepository implements UserRepositoryInterface {
     return newUser;
   }
 
-  async findByEmail(email: string): Promise<User> {
+  async findByEmail(email: string): Promise<IUser> {
     const user = await this.prisma.user.findUnique({
       where: {
         email,
         AND: {
           deleted: false,
         },
+      },
+      select: {
+        id: true,
+        first_name: true,
+        last_name: true,
+        email: true,
+        password: true,
+        phone: true,
+        address: true,
+        privacy_consent: true,
+        role_id: false,
+        role: {
+          select: {
+            id: true,
+            role_name: true,
+          },
+        },
+        deleted: false,
+        created_at: true,
+        updated_at: true,
       },
     });
 
@@ -57,6 +82,25 @@ export class UserRepository implements UserRepositoryInterface {
         },
       },
       data: updateDto,
+      select: {
+        id: true,
+        first_name: true,
+        last_name: true,
+        email: true,
+        password: false,
+        phone: true,
+        address: true,
+        privacy_consent: true,
+        role: {
+          select: {
+            id: true,
+            role_name: true,
+          },
+        },
+        deleted: false,
+        created_at: true,
+        updated_at: true,
+      },
     });
   }
 
@@ -91,6 +135,12 @@ export class UserRepository implements UserRepositoryInterface {
         phone: true,
         address: true,
         privacy_consent: true,
+        role: {
+          select: {
+            id: true,
+            role_name: true,
+          },
+        },
         deleted: false,
         created_at: true,
         updated_at: true,

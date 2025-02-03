@@ -22,7 +22,7 @@ async function main(): Promise<void> {
     ],
   });
 
-  const hashedPassword = await hashProvider.generateHash('123456');
+  const hashedPassword = await hashProvider.generateHash('Teste12!@');
 
   const adminUser: Prisma.UserCreateInput = {
     first_name: 'John',
