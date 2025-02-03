@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { IDefaultResponse } from '../@types/default-response.interface';
+import { IDefaultResponse } from '../interfaces/default-response.interface';
 import { UnauthorizedError } from '../errors/unauthorized.error';
 
 @Injectable()

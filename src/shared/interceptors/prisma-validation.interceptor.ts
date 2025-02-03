@@ -9,7 +9,7 @@ import {
   ValidationError,
 } from '@nestjs/common';
 import { catchError } from 'rxjs/operators';
-import { IDefaultResponse } from '../@types/default-response.interface';
+import { IDefaultResponse } from '../interfaces/default-response.interface';
 import { Observable, throwError } from 'rxjs';
 
 @Injectable()

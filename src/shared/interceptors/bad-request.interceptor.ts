@@ -8,7 +8,7 @@ import {
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { BadRequestError } from '../errors/bad-request.error';
-import { IDefaultResponse } from '../@types/default-response.interface';
+import { IDefaultResponse } from '../interfaces/default-response.interface';
 
 @Injectable()
 export class BadRequestInterceptor

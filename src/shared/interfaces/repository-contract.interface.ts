@@ -1,0 +1,12 @@
+export interface RepositoryContract<T> {
+  insert(createDto: any): Promise<T>;
+  findAll(
+    page: number,
+    limit: number,
+    orderBy: string,
+    search: string,
+  ): Promise<T[]>;
+  findById(id: number): Promise<T>;
+  update(id: number, updateDto: any): Promise<T>;
+  remove(id: number): Promise<void>;
+}

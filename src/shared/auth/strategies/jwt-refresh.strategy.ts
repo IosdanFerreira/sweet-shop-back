@@ -2,9 +2,9 @@ import { Inject, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigType } from '@nestjs/config';
-import jwtRefreshConfig from 'src/shared/config/jwt-refresh.config';
-import { IUserPayload } from 'src/shared/auth/interfaces/user-payload.interface';
-import { IUserFromJwt } from 'src/shared/auth/interfaces/user-from-jwt.interface';
+import jwtRefreshConfig from 'src/config/jwt-refresh.config';
+import { UserPayload } from 'src/shared/interfaces/user-payload.interface';
+import { UserFromJwt } from 'src/shared/interfaces/user-from-jwt.interface';
 
 @Injectable()
 export class RefreshJwtStrategy extends PassportStrategy(
@@ -18,13 +18,13 @@ export class RefreshJwtStrategy extends PassportStrategy(
     >,
   ) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromBodyField('refresh_token'),
       ignoreExpiration: false,
       secretOrKey: refreshJwtConfiguration.secret,
     });
   }
 
-  async validate(payload: IUserPayload): Promise<IUserFromJwt> {
+  async validate(payload: UserPayload): Promise<UserFromJwt> {
     return {
       id: payload.sub,
       email: payload.email,

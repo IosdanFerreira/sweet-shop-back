@@ -7,13 +7,17 @@ import { NotFoundInterceptor } from './shared/interceptors/not-found.interceptor
 import { BadRequestError } from './shared/errors/bad-request.error';
 
 async function bootstrap() {
+  // Cria uma instância do Nest
   const app = await NestFactory.create(AppModule);
+
+  // Intercepta os erros lançados na aplicação para exibi-los de forma customizada
   app.useGlobalInterceptors(
     new BadRequestInterceptor(),
     new ConflictInterceptor(),
     new NotFoundInterceptor(),
   );
 
+  // Intercepta erros de validação de dados para exibi-los de forma customizada
   app.useGlobalPipes(
     new ValidationPipe({
       exceptionFactory: (errors) => {

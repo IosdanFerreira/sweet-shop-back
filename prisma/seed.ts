@@ -1,6 +1,6 @@
 // src/prisma/seed.ts
 import { Prisma, PrismaClient } from '@prisma/client';
-import { HashProvider } from '../src/shared/providers/hash-provider/hash-provider';
+import { HashProvider } from '../src/shared/providers/hash-provider';
 const prisma = new PrismaClient();
 
 /**
