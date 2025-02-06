@@ -13,11 +13,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Gender {
-  Masculino
-  Feminino
-}
-
 model User {
   id              Int      @id @default(autoincrement())
   first_name      String
@@ -48,4 +43,107 @@ model Role {
   User User[]
 
   @@map("roles")
+}
+
+model Product {
+  id             Int      @id @default(autoincrement())
+  name           String
+  description    String
+  purchase_price Decimal
+  selling_price  Decimal
+  stock          Int      @default(0)
+  deleted        Boolean  @default(false)
+  created_at     DateTime @default(now())
+  updated_at     DateTime @default(now())
+
+  category_id Int
+  category    Category @relation(fields: [category_id], references: [id])
+
+  supplier_id   Int
+  supplier      Supplier        @relation(fields: [supplier_id], references: [id])
+  SaleItem      SaleItem[]
+  StockMovement StockMovement[]
+
+  @@map("products")
+}
+
+model Category {
+  id         Int      @id @default(autoincrement())
+  name       String   @unique
+  deleted    Boolean  @default(false)
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  products Product[]
+
+  @@map("categories")
+}
+
+model Supplier {
+  id         Int      @id @default(autoincrement())
+  name       String
+  phone      String
+  email      String?  @unique
+  deleted    Boolean  @default(false)
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  products Product[]
+
+  @@map("suppliers")
+}
+
+model Sale {
+  id         Int      @id @default(autoincrement())
+  total      Decimal
+  deleted    Boolean  @default(false)
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  items SaleItem[]
+}
+
+model SaleItem {
+  id         Int      @id @default(autoincrement())
+  quantity   Int
+  unit_price Decimal
+  subtotal   Decimal
+  deleted    Boolean  @default(false)
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  sale_id    Int
+  sale       Sale    @relation(fields: [sale_id], references: [id])
+  product_id Int
+  product    Product @relation(fields: [product_id], references: [id])
+
+  @@map("sales_items")
+}
+
+enum StockType {
+  increase // Entrada no estoque
+  decrease // Saída do estoque
+}
+
+model StockMovement {
+  id         Int       @id @default(autoincrement())
+  product_id Int
+  type       StockType
+  created_at DateTime  @default(now())
+  updated_at DateTime  @default(now())
+
+  quantity Int
+  product  Product @relation(fields: [product_id], references: [id])
+
+  @@map("stock_movements")
+}
+
+model Report {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @default(now())
+
+  @@map("reports")
 }

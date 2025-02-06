@@ -1,26 +1,115 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
+import { RoleRepositoryInterface } from './interfaces/role-repository.interface';
+import { IDefaultResponse } from 'src/shared/interfaces/default-response.interface';
+import { Role } from './entities/role.entity';
+import { NotFoundError } from 'src/shared/errors/not-found.error';
 
 @Injectable()
 export class RoleService {
-  create(createRoleDto: CreateRoleDto) {
-    return 'This action adds a new role';
+  constructor(
+    @Inject('RoleRepositoryInterface')
+    private readonly roleRepository: RoleRepositoryInterface,
+  ) {}
+  async createRole(
+    createRoleDto: CreateRoleDto,
+  ): Promise<IDefaultResponse<Role>> {
+    const createdRole = await this.roleRepository.insert(createRoleDto);
+
+    const formattedRole = {
+      status_code: HttpStatus.OK,
+      success: true,
+      error_type: null,
+      errors: null,
+      message: 'Permissão criada com sucesso',
+      data: { ...createdRole },
+      pagination: null,
+    };
+
+    return formattedRole;
   }
 
-  findAll() {
-    return `This action returns all role`;
+  async findAllRoles(): Promise<IDefaultResponse<Role[]>> {
+    const roles = await this.roleRepository.findAll();
+
+    const formattedRoles = {
+      status_code: HttpStatus.OK,
+      success: true,
+      error_type: null,
+      errors: null,
+      message: 'Permissões encontradas',
+      data: [...roles],
+      pagination: null,
+    };
+
+    return formattedRoles;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} role`;
+  async findRoleById(id: number): Promise<IDefaultResponse<Role>> {
+    const foundedRole = await this._get(id);
+
+    const formattedRole = {
+      status_code: HttpStatus.OK,
+      success: true,
+      error_type: null,
+      errors: null,
+      message: 'Permissão encontrada',
+      data: { ...foundedRole },
+      pagination: null,
+    };
+
+    return formattedRole;
   }
 
-  update(id: number, updateRoleDto: UpdateRoleDto) {
-    return `This action updates a #${id} role`;
+  async updateRole(id: number, updateRoleDto: UpdateRoleDto) {
+    await this._get(id);
+
+    const updatedRole = await this.roleRepository.update(id, updateRoleDto);
+
+    const formattedRole = {
+      status_code: HttpStatus.OK,
+      success: true,
+      error_type: null,
+      errors: null,
+      message: 'Permissão atualizada com sucesso',
+      data: { ...updatedRole },
+      pagination: null,
+    };
+
+    return formattedRole;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} role`;
+  async deleteRole(id: number) {
+    await this._get(id);
+
+    await this.roleRepository.remove(id);
+
+    const formattedRole = {
+      status_code: HttpStatus.OK,
+      success: true,
+      error_type: null,
+      errors: null,
+      message: 'Permissão excluída com sucesso',
+      data: null,
+      pagination: null,
+    };
+
+    return formattedRole;
+  }
+
+  protected async _get(id: number): Promise<Role> {
+    const role = await this.roleRepository.findById(id);
+
+    if (!role) {
+      throw new NotFoundError([
+        {
+          property: null,
+          message: 'Permissão não encontrada',
+        },
+      ]);
+    }
+
+    return role;
   }
 }
