@@ -1,4 +1,4 @@
-export interface IPaginationResponse {
+export interface PaginationResponseInterface {
   total_items: number;
   limit_per_page: number;
   current_page: number;
@@ -7,10 +7,10 @@ export interface IPaginationResponse {
   total_pages: number;
 }
 
-export interface IPagination {
+export interface PaginationInterface {
   generate(
     totalItems: number,
     page: number,
     limit: number,
-  ): IPaginationResponse;
+  ): PaginationResponseInterface;
 }

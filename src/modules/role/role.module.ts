@@ -3,21 +3,24 @@ import { RoleService } from './role.service';
 import { RoleController } from './role.controller';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { RoleRepository } from './repositories/role.repository';
+import { RemoveAccents } from 'src/shared/utils/remove-accents';
+import { SharedModule } from 'src/shared/modules/shared-module.module';
 
 @Module({
+  imports: [SharedModule],
   controllers: [RoleController],
   providers: [
     RoleService,
-    {
-      provide: 'PrismaService',
-      useClass: PrismaService,
-    },
+    PrismaService,
     {
       provide: 'RoleRepositoryInterface',
-      useFactory: (prismaService: PrismaService) => {
-        return new RoleRepository(prismaService);
+      useFactory: (
+        prismaService: PrismaService,
+        removeAccents: RemoveAccents,
+      ) => {
+        return new RoleRepository(prismaService, removeAccents);
       },
-      inject: ['PrismaService'],
+      inject: [PrismaService],
     },
   ],
   exports: [RoleService],

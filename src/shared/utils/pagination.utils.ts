@@ -1,14 +1,14 @@
 import {
-  IPagination,
-  IPaginationResponse,
+  PaginationInterface,
+  PaginationResponseInterface,
 } from '../interfaces/pagination.interface';
 
-export class Pagination implements IPagination {
+export class Pagination implements PaginationInterface {
   generate(
     totalItems: number,
     page: number,
     limit: number,
-  ): IPaginationResponse {
+  ): PaginationResponseInterface {
     const totalPages = Math.ceil(totalItems / limit);
 
     const prevPage = page > 1 ? page - 1 : null;

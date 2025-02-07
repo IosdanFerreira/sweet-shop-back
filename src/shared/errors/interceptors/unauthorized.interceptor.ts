@@ -7,11 +7,11 @@ import {
 } from '@nestjs/common';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { ConflictError } from '../errors/conflict.error';
-import { IDefaultResponse } from '../interfaces/default-response.interface';
+import { IDefaultResponse } from 'src/shared/interfaces/default-response.interface';
+import { UnauthorizedError } from '../types/unauthorized.error';
 
 @Injectable()
-export class ConflictInterceptor
+export class UnauthorizedInterceptor
   implements NestInterceptor<IDefaultResponse<null>>
 {
   intercept(
@@ -20,20 +20,19 @@ export class ConflictInterceptor
   ): Observable<IDefaultResponse<null>> {
     return next.handle().pipe(
       catchError((error) => {
-        // Se for um ConflictError, trata o erro
-        if (error instanceof ConflictError) {
+        if (error instanceof UnauthorizedError) {
           const ctx = context.switchToHttp();
           const response = ctx.getResponse();
-          const status = HttpStatus.CONFLICT;
+          const status = HttpStatus.UNAUTHORIZED;
 
           const formattedErrors = error.errors;
 
           const result: IDefaultResponse<null> = {
             status_code: status,
             success: false,
-            error_type: 'Conflict',
+            error_type: 'Unauthorized',
             errors: formattedErrors,
-            message: 'Conflito de dados',
+            message: 'Acesso não autorizado',
             data: null,
             pagination: null,
           };
@@ -41,7 +40,7 @@ export class ConflictInterceptor
           response.status(status).json(result);
         }
 
-        // Se não for um ConflictError, propague o erro para outros handlers
+        // Se não for um UnauthorizedError, propague o erro para outros handlers
         return throwError(() => error);
       }),
     );

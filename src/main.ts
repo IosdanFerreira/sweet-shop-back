@@ -1,10 +1,11 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import { BadRequestInterceptor } from './shared/interceptors/bad-request.interceptor';
-import { ConflictInterceptor } from './shared/interceptors/conflict.interceptor';
-import { NotFoundInterceptor } from './shared/interceptors/not-found.interceptor';
-import { BadRequestError } from './shared/errors/bad-request.error';
+import { BadRequestError } from './shared/errors/types/bad-request.error';
+import { BadRequestInterceptor } from './shared/errors/interceptors/bad-request.interceptor';
+import { ConflictInterceptor } from './shared/errors/interceptors/conflict.interceptor';
+import { NotFoundInterceptor } from './shared/errors/interceptors/not-found.interceptor';
+import { DatabaseInterceptor } from './shared/errors/interceptors/database.interceptor';
 
 async function bootstrap() {
   // Cria uma instância do Nest
@@ -15,6 +16,7 @@ async function bootstrap() {
     new BadRequestInterceptor(),
     new ConflictInterceptor(),
     new NotFoundInterceptor(),
+    new DatabaseInterceptor(),
   );
 
   // Intercepta erros de validação de dados para exibi-los de forma customizada

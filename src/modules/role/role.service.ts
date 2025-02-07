@@ -4,7 +4,7 @@ import { UpdateRoleDto } from './dto/update-role.dto';
 import { RoleRepositoryInterface } from './interfaces/role-repository.interface';
 import { IDefaultResponse } from 'src/shared/interfaces/default-response.interface';
 import { Role } from './entities/role.entity';
-import { NotFoundError } from 'src/shared/errors/not-found.error';
+import { NotFoundError } from 'src/shared/errors/types/not-found.error';
 
 @Injectable()
 export class RoleService {
@@ -31,7 +31,7 @@ export class RoleService {
   }
 
   async findAllRoles(): Promise<IDefaultResponse<Role[]>> {
-    const roles = await this.roleRepository.findAll();
+    const roles = await this.roleRepository.findAll(null, null, null);
 
     const formattedRoles = {
       status_code: HttpStatus.OK,
@@ -62,7 +62,10 @@ export class RoleService {
     return formattedRole;
   }
 
-  async updateRole(id: number, updateRoleDto: UpdateRoleDto) {
+  async updateRole(
+    id: number,
+    updateRoleDto: UpdateRoleDto,
+  ): Promise<IDefaultResponse<Role>> {
     await this._get(id);
 
     const updatedRole = await this.roleRepository.update(id, updateRoleDto);
@@ -80,7 +83,7 @@ export class RoleService {
     return formattedRole;
   }
 
-  async deleteRole(id: number) {
+  async deleteRole(id: number): Promise<IDefaultResponse<null>> {
     await this._get(id);
 
     await this.roleRepository.remove(id);

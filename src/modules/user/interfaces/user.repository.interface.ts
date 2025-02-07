@@ -2,6 +2,9 @@ import { RepositoryContract } from 'src/shared/interfaces/repository-contract.in
 import { User } from '../entities/user.entity';
 
 export interface UserRepositoryInterface
-  extends Omit<RepositoryContract<User>, 'findAll'> {
+  extends Omit<
+    RepositoryContract<User>,
+    'findAll' | 'countAll' | 'findAllFiltered' | 'countAllFiltered'
+  > {
   findByEmail(email: string): Promise<User>;
 }

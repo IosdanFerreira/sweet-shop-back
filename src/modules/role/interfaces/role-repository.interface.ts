@@ -2,6 +2,8 @@
 import { RepositoryContract } from 'src/shared/interfaces/repository-contract.interface';
 import { Role } from '../entities/role.entity';
 
-export interface RoleRepositoryInterface extends RepositoryContract<Role> {
-  findAll(): Promise<Role[]>;
-}
+export interface RoleRepositoryInterface
+  extends Omit<
+    RepositoryContract<Role>,
+    'countAll' | 'countAllFiltered' | 'findAllFiltered'
+  > {}

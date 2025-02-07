@@ -1,6 +1,7 @@
 // src/prisma/seed.ts
 import { Prisma, PrismaClient } from '@prisma/client';
 import { HashProvider } from '../src/shared/providers/hash-provider';
+import { RemoveAccents } from '../src/shared/utils/remove-accents';
 const prisma = new PrismaClient();
 
 /**
@@ -10,14 +11,17 @@ const prisma = new PrismaClient();
  */
 async function main(): Promise<void> {
   const hashProvider = new HashProvider();
+  const removeAccents = new RemoveAccents();
   // Criar as permissões iniciais dos tipos de usuários
   await prisma.role.createMany({
     data: [
       {
-        role_name: 'Administrador',
+        name: 'Administrador',
+        name_unaccented: removeAccents.execute('Administrador'),
       },
       {
-        role_name: 'Vendedor',
+        name: 'Vendedor',
+        name_unaccented: removeAccents.execute('Vendedor'),
       },
     ],
   });
@@ -26,7 +30,9 @@ async function main(): Promise<void> {
 
   const adminUser: Prisma.UserCreateInput = {
     first_name: 'John',
+    first_name_unaccented: removeAccents.execute('John'),
     last_name: 'Admin',
+    last_name_unaccented: removeAccents.execute('Admin'),
     email: 'johnAdmin@example.com',
     password: hashedPassword,
     phone: '(11) 99999-9999',
@@ -40,7 +46,9 @@ async function main(): Promise<void> {
 
   const sellerUser: Prisma.UserCreateInput = {
     first_name: 'John',
+    first_name_unaccented: removeAccents.execute('John'),
     last_name: 'Vendedor',
+    last_name_unaccented: removeAccents.execute('Vendedor'),
     email: 'johnVendedor@example.com',
     password: hashedPassword,
     phone: '(11) 99999-9999',
@@ -54,36 +62,10 @@ async function main(): Promise<void> {
 
   await prisma.user.create({
     data: adminUser,
-    select: {
-      id: true,
-      first_name: true,
-      last_name: true,
-      email: true,
-      password: false,
-      phone: true,
-      address: true,
-      privacy_consent: true,
-      deleted: false,
-      created_at: true,
-      updated_at: true,
-    },
   });
 
   await prisma.user.create({
     data: sellerUser,
-    select: {
-      id: true,
-      first_name: true,
-      last_name: true,
-      email: true,
-      password: false,
-      phone: true,
-      address: true,
-      privacy_consent: true,
-      deleted: false,
-      created_at: true,
-      updated_at: true,
-    },
   });
 }
 

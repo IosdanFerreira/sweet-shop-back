@@ -7,7 +7,7 @@ export class UniqueConstraintError extends ConflictError {
 
     super([
       {
-        property: uniqueField,
+        property: `${uniqueField}`,
         message: `Um registro com esse ${uniqueField} já existe!`,
       },
     ]);

@@ -7,11 +7,11 @@ import {
 } from '@nestjs/common';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { IDefaultResponse } from '../interfaces/default-response.interface';
-import { UnauthorizedError } from '../errors/unauthorized.error';
+import { IDefaultResponse } from 'src/shared/interfaces/default-response.interface';
+import { NotFoundError } from '../types/not-found.error';
 
 @Injectable()
-export class UnauthorizedInterceptor
+export class NotFoundInterceptor
   implements NestInterceptor<IDefaultResponse<null>>
 {
   intercept(
@@ -20,19 +20,19 @@ export class UnauthorizedInterceptor
   ): Observable<IDefaultResponse<null>> {
     return next.handle().pipe(
       catchError((error) => {
-        if (error instanceof UnauthorizedError) {
+        if (error instanceof NotFoundError) {
           const ctx = context.switchToHttp();
           const response = ctx.getResponse();
-          const status = HttpStatus.UNAUTHORIZED;
+          const status = HttpStatus.NOT_FOUND;
 
           const formattedErrors = error.errors;
 
           const result: IDefaultResponse<null> = {
             status_code: status,
             success: false,
-            error_type: 'Unauthorized',
+            error_type: 'Not Found',
             errors: formattedErrors,
-            message: 'Acesso não autorizado',
+            message: 'Dado não encontrado',
             data: null,
             pagination: null,
           };
@@ -40,7 +40,7 @@ export class UnauthorizedInterceptor
           response.status(status).json(result);
         }
 
-        // Se não for um UnauthorizedError, propague o erro para outros handlers
+        // Se não for um NotFoundError, propague o erro para outros handlers
         return throwError(() => error);
       }),
     );

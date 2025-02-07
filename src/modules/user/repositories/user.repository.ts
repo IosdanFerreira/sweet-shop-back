@@ -3,13 +3,21 @@ import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { UserRepositoryInterface } from '../interfaces/user.repository.interface';
 import { User } from '../entities/user.entity';
+import { RemoveAccentsInterface } from 'src/shared/interfaces/remove-accents.interface';
 
 export class UserRepository implements UserRepositoryInterface {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly removeAccents: RemoveAccentsInterface,
+  ) {}
 
   async insert(createDto: CreateUserDto): Promise<User> {
     const newUser = await this.prisma.user.create({
-      data: createDto,
+      data: {
+        ...createDto,
+        first_name_unaccented: this.removeAccents.execute(createDto.first_name),
+        last_name_unaccented: this.removeAccents.execute(createDto.last_name),
+      },
       select: {
         id: true,
         first_name: true,
@@ -22,7 +30,7 @@ export class UserRepository implements UserRepositoryInterface {
         role: {
           select: {
             id: true,
-            role_name: true,
+            name: true,
           },
         },
         deleted: false,
@@ -55,7 +63,7 @@ export class UserRepository implements UserRepositoryInterface {
         role: {
           select: {
             id: true,
-            role_name: true,
+            name: true,
           },
         },
         deleted: false,
@@ -81,7 +89,11 @@ export class UserRepository implements UserRepositoryInterface {
           deleted: false,
         },
       },
-      data: updateDto,
+      data: {
+        ...updateDto,
+        first_name_unaccented: this.removeAccents.execute(updateDto.first_name),
+        last_name_unaccented: this.removeAccents.execute(updateDto.last_name),
+      },
       select: {
         id: true,
         first_name: true,
@@ -94,7 +106,7 @@ export class UserRepository implements UserRepositoryInterface {
         role: {
           select: {
             id: true,
-            role_name: true,
+            name: true,
           },
         },
         deleted: false,
@@ -140,7 +152,7 @@ export class UserRepository implements UserRepositoryInterface {
         role: {
           select: {
             id: true,
-            role_name: true,
+            name: true,
           },
         },
         deleted: false,

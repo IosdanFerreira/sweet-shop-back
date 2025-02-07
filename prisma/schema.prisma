@@ -14,17 +14,19 @@ datasource db {
 }
 
 model User {
-  id              Int      @id @default(autoincrement())
-  first_name      String
-  last_name       String
-  email           String   @unique
-  password        String
-  phone           String
-  address         String?
-  privacy_consent Boolean
-  deleted         Boolean  @default(false)
-  created_at      DateTime @default(now())
-  updated_at      DateTime @default(now())
+  id                    Int      @id @default(autoincrement())
+  first_name            String
+  first_name_unaccented String
+  last_name             String
+  last_name_unaccented  String
+  email                 String   @unique
+  password              String
+  phone                 String
+  address               String?
+  privacy_consent       Boolean
+  deleted               Boolean  @default(false)
+  created_at            DateTime @default(now())
+  updated_at            DateTime @default(now())
 
   role_id Int
   role    Role @relation(fields: [role_id], references: [id])
@@ -33,9 +35,10 @@ model User {
 }
 
 model Role {
-  id        Int     @id @default(autoincrement())
-  role_name String  @unique
-  deleted   Boolean @default(false)
+  id              Int     @id @default(autoincrement())
+  name            String  @unique
+  name_unaccented String  @unique
+  deleted         Boolean @default(false)
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -46,15 +49,17 @@ model Role {
 }
 
 model Product {
-  id             Int      @id @default(autoincrement())
-  name           String
-  description    String
-  purchase_price Decimal
-  selling_price  Decimal
-  stock          Int      @default(0)
-  deleted        Boolean  @default(false)
-  created_at     DateTime @default(now())
-  updated_at     DateTime @default(now())
+  id                     Int      @id @default(autoincrement())
+  name                   String
+  name_unaccented        String
+  description            String?
+  description_unaccented String?
+  purchase_price         Int //preço em centavos
+  selling_price          Int //preço em centavos
+  stock                  Int      @default(0)
+  deleted                Boolean  @default(false)
+  created_at             DateTime @default(now())
+  updated_at             DateTime @default(now())
 
   category_id Int
   category    Category @relation(fields: [category_id], references: [id])
@@ -68,11 +73,12 @@ model Product {
 }
 
 model Category {
-  id         Int      @id @default(autoincrement())
-  name       String   @unique
-  deleted    Boolean  @default(false)
-  created_at DateTime @default(now())
-  updated_at DateTime @default(now())
+  id              Int      @id @default(autoincrement())
+  name            String   @unique
+  name_unaccented String   @unique
+  deleted         Boolean  @default(false)
+  created_at      DateTime @default(now())
+  updated_at      DateTime @default(now())
 
   products Product[]
 
@@ -80,13 +86,14 @@ model Category {
 }
 
 model Supplier {
-  id         Int      @id @default(autoincrement())
-  name       String
-  phone      String
-  email      String?  @unique
-  deleted    Boolean  @default(false)
-  created_at DateTime @default(now())
-  updated_at DateTime @default(now())
+  id              Int      @id @default(autoincrement())
+  name            String
+  name_unaccented String
+  phone           String
+  email           String?  @unique
+  deleted         Boolean  @default(false)
+  created_at      DateTime @default(now())
+  updated_at      DateTime @default(now())
 
   products Product[]
 
@@ -95,7 +102,7 @@ model Supplier {
 
 model Sale {
   id         Int      @id @default(autoincrement())
-  total      Decimal
+  total      Int //preço em centavos
   deleted    Boolean  @default(false)
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
@@ -106,8 +113,8 @@ model Sale {
 model SaleItem {
   id         Int      @id @default(autoincrement())
   quantity   Int
-  unit_price Decimal
-  subtotal   Decimal
+  unit_price Int //preço em centavos
+  subtotal   Int //preço em centavos
   deleted    Boolean  @default(false)
   created_at DateTime @default(now())
   updated_at DateTime @default(now())

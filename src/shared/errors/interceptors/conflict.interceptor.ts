@@ -7,11 +7,11 @@ import {
 } from '@nestjs/common';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { BadRequestError } from '../errors/bad-request.error';
-import { IDefaultResponse } from '../interfaces/default-response.interface';
+import { IDefaultResponse } from 'src/shared/interfaces/default-response.interface';
+import { ConflictError } from '../types/conflict.error';
 
 @Injectable()
-export class BadRequestInterceptor
+export class ConflictInterceptor
   implements NestInterceptor<IDefaultResponse<null>>
 {
   intercept(
@@ -20,20 +20,20 @@ export class BadRequestInterceptor
   ): Observable<IDefaultResponse<null>> {
     return next.handle().pipe(
       catchError((error) => {
-        // Se for um BadRequestError, trata o erro
-        if (error instanceof BadRequestError) {
+        // Se for um ConflictError, trata o erro
+        if (error instanceof ConflictError) {
           const ctx = context.switchToHttp();
           const response = ctx.getResponse();
-          const status = HttpStatus.BAD_REQUEST;
+          const status = HttpStatus.CONFLICT;
 
           const formattedErrors = error.errors;
 
           const result: IDefaultResponse<null> = {
             status_code: status,
             success: false,
-            error_type: 'Bad Request',
+            error_type: 'Conflict',
             errors: formattedErrors,
-            message: 'Erro na requisição, verifique os dados',
+            message: 'Conflito de dados',
             data: null,
             pagination: null,
           };
@@ -41,7 +41,7 @@ export class BadRequestInterceptor
           response.status(status).json(result);
         }
 
-        // Se não for um BadRequestError, propague o erro para outros handlers
+        // Se não for um ConflictError, propague o erro para outros handlers
         return throwError(() => error);
       }),
     );

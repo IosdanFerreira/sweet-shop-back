@@ -9,8 +9,8 @@ import {
   ValidationError,
 } from '@nestjs/common';
 import { catchError } from 'rxjs/operators';
-import { IDefaultResponse } from '../interfaces/default-response.interface';
 import { Observable, throwError } from 'rxjs';
+import { IDefaultResponse } from 'src/shared/interfaces/default-response.interface';
 
 @Injectable()
 export class PrismaValidationInterceptor
