@@ -5,6 +5,7 @@ import { RoleRepositoryInterface } from './interfaces/role-repository.interface'
 import { IDefaultResponse } from 'src/shared/interfaces/default-response.interface';
 import { Role } from './entities/role.entity';
 import { NotFoundError } from 'src/shared/errors/types/not-found.error';
+import { BadRequestError } from 'src/shared/errors/types/bad-request.error';
 
 @Injectable()
 export class RoleService {
@@ -12,9 +13,8 @@ export class RoleService {
     @Inject('RoleRepositoryInterface')
     private readonly roleRepository: RoleRepositoryInterface,
   ) {}
-  async createRole(
-    createRoleDto: CreateRoleDto,
-  ): Promise<IDefaultResponse<Role>> {
+
+  async createRole(createRoleDto: CreateRoleDto): Promise<IDefaultResponse<Role>> {
     const createdRole = await this.roleRepository.insert(createRoleDto);
 
     const formattedRole = {
@@ -23,7 +23,7 @@ export class RoleService {
       error_type: null,
       errors: null,
       message: 'Permissão criada com sucesso',
-      data: { ...createdRole },
+      data: createdRole,
       pagination: null,
     };
 
@@ -39,7 +39,7 @@ export class RoleService {
       error_type: null,
       errors: null,
       message: 'Permissões encontradas',
-      data: [...roles],
+      data: roles,
       pagination: null,
     };
 
@@ -55,18 +55,24 @@ export class RoleService {
       error_type: null,
       errors: null,
       message: 'Permissão encontrada',
-      data: { ...foundedRole },
+      data: foundedRole,
       pagination: null,
     };
 
     return formattedRole;
   }
 
-  async updateRole(
-    id: number,
-    updateRoleDto: UpdateRoleDto,
-  ): Promise<IDefaultResponse<Role>> {
+  async updateRole(id: number, updateRoleDto: UpdateRoleDto): Promise<IDefaultResponse<Role>> {
     await this._get(id);
+
+    if (Object.keys(updateRoleDto).length === 0) {
+      throw new BadRequestError([
+        {
+          property: null,
+          message: 'Nenhuma informação foi fornecida',
+        },
+      ]);
+    }
 
     const updatedRole = await this.roleRepository.update(id, updateRoleDto);
 
@@ -76,7 +82,7 @@ export class RoleService {
       error_type: null,
       errors: null,
       message: 'Permissão atualizada com sucesso',
-      data: { ...updatedRole },
+      data: updatedRole,
       pagination: null,
     };
 

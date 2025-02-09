@@ -30,13 +30,9 @@ export class UserService {
     private refreshTokenConfig: ConfigType<typeof refreshJwtConfig>,
   ) {}
 
-  async createUser(
-    createUserDto: CreateUserDto,
-  ): Promise<IDefaultResponse<User>> {
+  async createUser(createUserDto: CreateUserDto): Promise<IDefaultResponse<User>> {
     // Checa se o email do usuário ja existe
-    const userAlreadyExists = await this.userRepository.findByEmail(
-      createUserDto.email,
-    );
+    const userAlreadyExists = await this.userRepository.findByEmail(createUserDto.email);
 
     // Se o email existir no banco, retorna um erro
     if (userAlreadyExists) {
@@ -50,9 +46,7 @@ export class UserService {
 
     // Caso o novo usuário seja válido
     // Cria o hash da senha
-    const hashedPassword = await this.hashProvider.generateHash(
-      createUserDto.password,
-    );
+    const hashedPassword = await this.hashProvider.generateHash(createUserDto.password);
 
     // Cria o usuário no banco
     const createdUser = await this.userRepository.insert({
@@ -67,7 +61,7 @@ export class UserService {
       error_type: null,
       errors: null,
       message: 'Usuário criado com sucesso',
-      data: { ...createdUser },
+      data: createdUser,
       pagination: null,
     };
 
@@ -76,9 +70,7 @@ export class UserService {
 
   async signin(signinDto: SignInDto): Promise<IDefaultResponse<UserWithToken>> {
     // Checa se o email do usuário existe
-    const userAlreadyExists = await this.userRepository.findByEmail(
-      signinDto.email,
-    );
+    const userAlreadyExists = await this.userRepository.findByEmail(signinDto.email);
 
     // Se o email não existir, retorna um erro
     if (!userAlreadyExists) {
@@ -91,10 +83,7 @@ export class UserService {
     }
 
     // Checa se a senha informada corresponde a senha do usuário cadastrado
-    const isValidPassword = await this.hashProvider.compareHash(
-      signinDto.password,
-      userAlreadyExists.password,
-    );
+    const isValidPassword = await this.hashProvider.compareHash(signinDto.password, userAlreadyExists.password);
 
     // Se a senha informada não corresponder, retorna um erro
     if (!isValidPassword) {
@@ -111,10 +100,7 @@ export class UserService {
     delete userAlreadyExists.deleted;
 
     // Gera os tokens de acesso e refresh
-    const tokenGenerator = new generateTokens(
-      this.jwtService,
-      this.refreshTokenConfig,
-    );
+    const tokenGenerator = new generateTokens(this.jwtService, this.refreshTokenConfig);
     const tokens = tokenGenerator.generate(userAlreadyExists);
 
     // Formata a resposta no formato padrão
@@ -140,6 +126,15 @@ export class UserService {
     // Busca o usuário no banco pelo ID informado
     await this._get(id);
 
+    if (Object.keys(updateUserDto).length === 0) {
+      throw new BadRequestError([
+        {
+          property: null,
+          message: 'Nenhuma informação foi fornecida',
+        },
+      ]);
+    }
+
     // Atualiza os dados do usuário
     const updatedUser = await this.userRepository.update(id, updateUserDto);
 
@@ -150,7 +145,7 @@ export class UserService {
       error_type: null,
       errors: null,
       message: 'Dados do usuário atualizado',
-      data: { ...updatedUser },
+      data: updatedUser,
       pagination: null,
     };
 
@@ -180,10 +175,7 @@ export class UserService {
 
   refresh(user: User) {
     // Cria uma instância da classe que gera os tokens
-    const tokenGenerator = new generateTokens(
-      this.jwtService,
-      this.refreshTokenConfig,
-    );
+    const tokenGenerator = new generateTokens(this.jwtService, this.refreshTokenConfig);
 
     // Chama o método generate da classe para gerar os tokens assinados com os dados do usuário
     const tokens = tokenGenerator.generate(user);
@@ -214,7 +206,7 @@ export class UserService {
       error_type: null,
       errors: null,
       message: 'Usuário encontrado',
-      data: { ...foundedUser },
+      data: foundedUser,
       pagination: null,
     };
 

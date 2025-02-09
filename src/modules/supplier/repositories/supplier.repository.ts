@@ -1,11 +1,12 @@
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Category } from '../entities/category.entity';
-import { CategoryRepositoryInterface } from '../interfaces/category-repository.interface';
-import { RemoveAccentsInterface } from 'src/shared/interfaces/remove-accents.interface';
-import { CreateCategoryDto } from '../dto/create-category.dto';
+import { Supplier } from '../entities/supplier.entity';
+import { SupplierRepositoryInterface } from '../interfaces/supplier-repository.interface';
 import { Inject } from '@nestjs/common';
+import { RemoveAccentsInterface } from 'src/shared/interfaces/remove-accents.interface';
+import { CreateSupplierDto } from '../dto/create-supplier.dto';
+import { UpdateSupplierDto } from '../dto/update-supplier.dto';
 
-export class CategoryRepository implements CategoryRepositoryInterface {
+export class SupplierRepository implements SupplierRepositoryInterface {
   constructor(
     private readonly prisma: PrismaService,
 
@@ -13,8 +14,8 @@ export class CategoryRepository implements CategoryRepositoryInterface {
     private readonly removeAccents: RemoveAccentsInterface,
   ) {}
 
-  async insert(createDto: CreateCategoryDto): Promise<Category> {
-    return await this.prisma.category.create({
+  async insert(createDto: CreateSupplierDto): Promise<Supplier> {
+    return await this.prisma.supplier.create({
       data: {
         ...createDto,
         name_unaccented: this.removeAccents.execute(createDto.name),
@@ -23,6 +24,8 @@ export class CategoryRepository implements CategoryRepositoryInterface {
         id: true,
         name: true,
         name_unaccented: false,
+        phone: true,
+        email: true,
         deleted: false,
         created_at: true,
         updated_at: true,
@@ -30,10 +33,14 @@ export class CategoryRepository implements CategoryRepositoryInterface {
     });
   }
 
-  async findAll(page: number, limit: number, orderBy: 'asc' | 'desc' = 'desc'): Promise<Category[]> {
+  async findAll(
+    page: number,
+    limit: number,
+    orderBy: 'asc' | 'desc',
+  ): Promise<Supplier[]> {
     const skip = (page - 1) * limit;
 
-    return await this.prisma.category.findMany({
+    return await this.prisma.supplier.findMany({
       where: {
         deleted: false,
       },
@@ -46,61 +53,69 @@ export class CategoryRepository implements CategoryRepositoryInterface {
         id: true,
         name: true,
         name_unaccented: false,
+        phone: true,
+        email: true,
         deleted: false,
         created_at: true,
         updated_at: true,
       },
     });
   }
-
-  async findAllFiltered(page: number, limit: number, orderBy: 'asc' | 'desc' = 'desc', search: string): Promise<Category[]> {
-    const skip = (page - 1) * limit;
-    return await this.prisma.category.findMany({
-      where: {
-        OR: [
-          {
-            name: {
-              contains: search,
-              mode: 'insensitive',
-            },
-          },
-          {
-            name_unaccented: {
-              contains: search,
-              mode: 'insensitive',
-            },
-          },
-        ],
-        AND: {
-          deleted: false,
-        },
-      },
-      skip,
-      take: limit,
-      orderBy: {
-        id: orderBy,
-      },
-      select: {
-        id: true,
-        name: true,
-        name_unaccented: false,
-        deleted: false,
-        created_at: true,
-        updated_at: true,
-      },
-    });
-  }
-
   async countAll(): Promise<number> {
-    return await this.prisma.category.count({
+    return await this.prisma.supplier.count({
       where: {
         deleted: false,
       },
     });
   }
 
+  async findAllFiltered(
+    page: number,
+    limit: number,
+    orderBy: 'asc' | 'desc',
+    search: string,
+  ): Promise<Supplier[]> {
+    const skip = (page - 1) * limit;
+
+    return await this.prisma.supplier.findMany({
+      where: {
+        OR: [
+          {
+            name: {
+              contains: search,
+              mode: 'insensitive',
+            },
+          },
+          {
+            name_unaccented: {
+              contains: search,
+              mode: 'insensitive',
+            },
+          },
+        ],
+        AND: {
+          deleted: false,
+        },
+      },
+      skip,
+      take: limit,
+      orderBy: {
+        id: orderBy,
+      },
+      select: {
+        id: true,
+        name: true,
+        name_unaccented: false,
+        phone: true,
+        email: true,
+        deleted: false,
+        created_at: true,
+        updated_at: true,
+      },
+    });
+  }
   async countAllFiltered(search: string): Promise<number> {
-    return await this.prisma.category.count({
+    return await this.prisma.supplier.count({
       where: {
         OR: [
           {
@@ -122,9 +137,8 @@ export class CategoryRepository implements CategoryRepositoryInterface {
       },
     });
   }
-
-  async findById(id: number): Promise<Category> {
-    return await this.prisma.category.findUnique({
+  async findById(id: number): Promise<Supplier> {
+    return await this.prisma.supplier.findUnique({
       where: {
         id,
         deleted: false,
@@ -133,15 +147,16 @@ export class CategoryRepository implements CategoryRepositoryInterface {
         id: true,
         name: true,
         name_unaccented: false,
+        phone: true,
+        email: true,
         deleted: false,
         created_at: true,
         updated_at: true,
       },
     });
   }
-
-  async update(id: number, updateDto: any): Promise<Category> {
-    return await this.prisma.category.update({
+  async update(id: number, updateDto: UpdateSupplierDto): Promise<Supplier> {
+    return await this.prisma.supplier.update({
       where: {
         id,
         deleted: false,
@@ -160,9 +175,8 @@ export class CategoryRepository implements CategoryRepositoryInterface {
       },
     });
   }
-
   async remove(id: number): Promise<void> {
-    await this.prisma.category.update({
+    await this.prisma.supplier.update({
       where: {
         id,
         deleted: false,

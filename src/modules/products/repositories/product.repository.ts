@@ -1,34 +1,385 @@
 import { ProductRepositoryInterface } from '../interfaces/product-repository.interface';
 import { Product } from '../entities/product.entity';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { CreateProductDto } from '../dto/create-product.dto';
+import { RemoveAccentsInterface } from 'src/shared/interfaces/remove-accents.interface';
+import { Inject } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 
 export class ProductRepository implements ProductRepositoryInterface {
-  countAll(): Promise<number> {
-    throw new Error('Method not implemented.');
+  constructor(
+    private readonly prisma: PrismaService,
+
+    @Inject('RemoveAccentsInterface')
+    private readonly removeAccents: RemoveAccentsInterface,
+  ) {}
+
+  async insert(createDto: CreateProductDto): Promise<Product> {
+    const { category_id, supplier_id, ...rest } = createDto;
+
+    const data: Prisma.ProductCreateInput = {
+      ...rest,
+      name_unaccented: this.removeAccents.execute(createDto.name),
+      description_unaccented: createDto.description && this.removeAccents.execute(createDto.description),
+      category: {
+        connect: {
+          id: category_id,
+        },
+      },
+      supplier: {
+        connect: {
+          id: supplier_id,
+        },
+      },
+    };
+
+    return await this.prisma.product.create({
+      data,
+      select: {
+        id: true,
+        name: true,
+        name_unaccented: false,
+        description: true,
+        description_unaccented: false,
+        purchase_price: true,
+        selling_price: true,
+        stock: true,
+        category: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        supplier: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        deleted: false,
+        created_at: true,
+        updated_at: true,
+      },
+    });
   }
-  findAllFiltered(
-    page: number,
-    limit: number,
-    orderBy: 'asc' | 'desc',
-    search: string,
-  ): Promise<Product[]> {
-    throw new Error('Method not implemented.');
+
+  async findAll(page: number, limit: number, orderBy: 'asc' | 'desc' = 'desc'): Promise<Product[]> {
+    const skip = (page - 1) * limit;
+
+    return await this.prisma.product.findMany({
+      where: {
+        deleted: false,
+      },
+      skip,
+      take: limit,
+      orderBy: {
+        id: orderBy,
+      },
+      select: {
+        id: true,
+        name: true,
+        name_unaccented: false,
+        description: true,
+        description_unaccented: false,
+        purchase_price: true,
+        selling_price: true,
+        stock: true,
+        category: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        supplier: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        deleted: false,
+        created_at: true,
+        updated_at: true,
+      },
+    });
   }
-  countAllFiltered(search: string): Promise<number> {
-    throw new Error('Method not implemented.');
+
+  async findAllFiltered(page: number, limit: number, orderBy: 'asc' | 'desc', search: string): Promise<Product[]> {
+    const skip = (page - 1) * limit;
+
+    return await this.prisma.product.findMany({
+      where: {
+        OR: [
+          {
+            name: {
+              contains: search,
+              mode: 'insensitive',
+            },
+          },
+          {
+            name_unaccented: {
+              contains: search,
+              mode: 'insensitive',
+            },
+          },
+          {
+            description: {
+              contains: search,
+              mode: 'insensitive',
+            },
+          },
+          {
+            description_unaccented: {
+              contains: search,
+              mode: 'insensitive',
+            },
+          },
+        ],
+        AND: {
+          deleted: false,
+        },
+      },
+      skip,
+      take: limit,
+      orderBy: {
+        id: orderBy,
+      },
+      select: {
+        id: true,
+        name: true,
+        name_unaccented: false,
+        description: true,
+        description_unaccented: false,
+        purchase_price: true,
+        selling_price: true,
+        stock: true,
+        category: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        supplier: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        deleted: false,
+        created_at: true,
+        updated_at: true,
+      },
+    });
   }
-  insert(createDto: any): Promise<Product> {
-    throw new Error('Method not implemented.');
+
+  async countAll(): Promise<number> {
+    return await this.prisma.product.count({
+      where: {
+        deleted: false,
+      },
+    });
   }
-  findAll(page: number, limit: number, orderBy: string): Promise<Product[]> {
-    throw new Error('Method not implemented.');
+  async countAllFiltered(search: string): Promise<number> {
+    return await this.prisma.product.count({
+      where: {
+        OR: [
+          {
+            name: {
+              contains: search,
+              mode: 'insensitive',
+            },
+          },
+          {
+            name_unaccented: {
+              contains: search,
+              mode: 'insensitive',
+            },
+          },
+          {
+            description: {
+              contains: search,
+              mode: 'insensitive',
+            },
+          },
+          {
+            description_unaccented: {
+              contains: search,
+              mode: 'insensitive',
+            },
+          },
+        ],
+        AND: {
+          deleted: false,
+        },
+      },
+    });
   }
-  findById(id: number): Promise<Product> {
-    throw new Error('Method not implemented.');
+  async findById(id: number): Promise<Product> {
+    return await this.prisma.product.findUnique({
+      where: {
+        id,
+        deleted: false,
+      },
+      select: {
+        id: true,
+        name: true,
+        name_unaccented: false,
+        description: true,
+        description_unaccented: false,
+        purchase_price: true,
+        selling_price: true,
+        stock: true,
+        category: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        supplier: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        deleted: false,
+        created_at: true,
+        updated_at: true,
+      },
+    });
   }
-  update(id: number, updateDto: any): Promise<Product> {
-    throw new Error('Method not implemented.');
+  async update(id: number, updateDto: any): Promise<Product> {
+    return await this.prisma.product.update({
+      where: {
+        id,
+        deleted: false,
+      },
+      data: {
+        ...updateDto,
+        name_unaccented: updateDto.name && this.removeAccents.execute(updateDto.name),
+        description_unaccented: updateDto.description && this.removeAccents.execute(updateDto.description),
+      },
+      select: {
+        id: true,
+        name: true,
+        name_unaccented: false,
+        description: true,
+        description_unaccented: false,
+        purchase_price: true,
+        selling_price: true,
+        stock: true,
+        category: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        supplier: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        deleted: false,
+        created_at: true,
+        updated_at: true,
+      },
+    });
   }
-  remove(id: number): Promise<void> {
-    throw new Error('Method not implemented.');
+
+  async remove(id: number): Promise<void> {
+    await this.prisma.product.update({
+      where: {
+        id,
+        deleted: false,
+      },
+      data: {
+        deleted: true,
+      },
+    });
+  }
+
+  async increaseStock(id: number, quantity: number): Promise<Product> {
+    return await this.prisma.product.update({
+      where: {
+        id,
+        deleted: false,
+      },
+      data: {
+        stock: {
+          increment: quantity,
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+        name_unaccented: false,
+        description: true,
+        description_unaccented: false,
+        purchase_price: true,
+        selling_price: true,
+        stock: true,
+        category: {
+          select: {
+            id: true,
+            name: true,
+            created_at: true,
+            updated_at: true,
+          },
+        },
+        supplier: {
+          select: {
+            id: true,
+            name: true,
+            created_at: true,
+            updated_at: true,
+          },
+        },
+        deleted: false,
+        created_at: true,
+        updated_at: true,
+      },
+    });
+  }
+
+  async decreaseStock(id: number, quantity: number): Promise<Product> {
+    return await this.prisma.product.update({
+      where: {
+        id,
+        deleted: false,
+      },
+      data: {
+        stock: {
+          decrement: quantity,
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+        name_unaccented: false,
+        description: true,
+        description_unaccented: false,
+        purchase_price: true,
+        selling_price: true,
+        stock: true,
+        category: {
+          select: {
+            id: true,
+            name: true,
+            created_at: true,
+            updated_at: true,
+          },
+        },
+        supplier: {
+          select: {
+            id: true,
+            name: true,
+            created_at: true,
+            updated_at: true,
+          },
+        },
+        deleted: false,
+        created_at: true,
+        updated_at: true,
+      },
+    });
   }
 }

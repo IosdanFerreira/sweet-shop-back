@@ -1,26 +1,190 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { ProductRepositoryInterface } from './interfaces/product-repository.interface';
+import { IDefaultResponse } from 'src/shared/interfaces/default-response.interface';
+import { Product } from './entities/product.entity';
+import { PaginationInterface } from 'src/shared/interfaces/pagination.interface';
+import { CategoryService } from '../category/category.service';
+import { SupplierService } from '../supplier/supplier.service';
+import { NotFoundError } from 'src/shared/errors/types/not-found.error';
+import { BadRequestError } from 'src/shared/errors/types/bad-request.error';
 
 @Injectable()
 export class ProductsService {
-  create(createProductDto: CreateProductDto) {
-    return 'This action adds a new product';
+  constructor(
+    @Inject('ProductRepositoryInterface')
+    private readonly productRepository: ProductRepositoryInterface,
+
+    @Inject('PaginationInterface')
+    private readonly pagination: PaginationInterface,
+
+    private readonly categoryService: CategoryService,
+    private readonly supplierService: SupplierService,
+  ) {}
+
+  async createProduct(createProductDto: CreateProductDto): Promise<IDefaultResponse<Product>> {
+    await this.categoryService.findCategoryById(createProductDto.category_id);
+
+    await this.supplierService.findSupplierById(createProductDto.supplier_id);
+
+    const createdProduct = await this.productRepository.insert(createProductDto);
+
+    const formattedReturn = {
+      status_code: HttpStatus.CREATED,
+      success: true,
+      error_type: null,
+      errors: null,
+      message: 'Produto criado com sucesso',
+      data: { ...createdProduct },
+      pagination: null,
+    };
+
+    return formattedReturn;
   }
 
-  findAll() {
-    return `This action returns all products`;
+  async findAllProducts(page: number, limit: number, orderBy: 'asc' | 'desc' = 'desc', search?: string) {
+    if (search) {
+      const filteredTotalItems = await this.productRepository.countAllFiltered(search);
+
+      const filteredProducts = await this.productRepository.findAllFiltered(page, limit, orderBy, search);
+
+      const formattedReturn = {
+        status_code: HttpStatus.OK,
+        success: true,
+        error_type: null,
+        errors: null,
+        message: 'Produtos encontrados com sucesso',
+        data: filteredProducts,
+        pagination: this.pagination.generate(filteredTotalItems, page, limit),
+      };
+
+      return formattedReturn;
+    }
+
+    const totalItems = await this.productRepository.countAll();
+    const products = await this.productRepository.findAll(page, limit, orderBy);
+
+    const formattedReturn = {
+      status_code: HttpStatus.OK,
+      success: true,
+      error_type: null,
+      errors: null,
+      message: 'Produtos encontrados com sucesso',
+      data: products,
+      pagination: this.pagination.generate(totalItems, page, limit),
+    };
+
+    return formattedReturn;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} product`;
+  async findProductById(id: number) {
+    const product = await this._get(id);
+
+    const formattedReturn = {
+      status_code: HttpStatus.OK,
+      success: true,
+      error_type: null,
+      errors: null,
+      message: 'Produto encontrado com sucesso',
+      data: product,
+      pagination: null,
+    };
+
+    return formattedReturn;
   }
 
-  update(id: number, updateProductDto: UpdateProductDto) {
-    return `This action updates a #${id} product`;
+  async updateProduct(id: number, updateProductDto: UpdateProductDto) {
+    await this._get(id);
+
+    if (Object.keys(updateProductDto).length === 0) {
+      throw new BadRequestError([
+        {
+          property: null,
+          message: 'Nenhuma informação foi fornecida',
+        },
+      ]);
+    }
+
+    const updatedProduct = await this.productRepository.update(id, updateProductDto);
+
+    const formattedReturn = {
+      status_code: HttpStatus.OK,
+      success: true,
+      error_type: null,
+      errors: null,
+      message: 'Produto atualizado com sucesso',
+      data: updatedProduct,
+      pagination: null,
+    };
+
+    return formattedReturn;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} product`;
+  async deleteProduct(id: number) {
+    await this._get(id);
+
+    await this.productRepository.remove(id);
+
+    const formattedReturn = {
+      status_code: HttpStatus.OK,
+      success: true,
+      error_type: null,
+      errors: null,
+      message: 'Produto excluído com sucesso',
+      data: null,
+      pagination: null,
+    };
+
+    return formattedReturn;
+  }
+
+  async updateProductStock(id: number, quantity: number, type: 'increase' | 'decrease') {
+    await this._get(id);
+
+    if (type === 'decrease') {
+      const productWithUpdatedStock = await this.productRepository.decreaseStock(id, quantity);
+
+      const formattedReturn = {
+        status_code: HttpStatus.OK,
+        success: true,
+        error_type: null,
+        errors: null,
+        message: 'Estoque do produto atualizado com sucesso',
+        data: productWithUpdatedStock,
+        pagination: null,
+      };
+
+      return formattedReturn;
+    }
+
+    const productWithUpdatedStock = await this.productRepository.increaseStock(id, quantity);
+
+    const formattedReturn = {
+      status_code: HttpStatus.OK,
+      success: true,
+      error_type: null,
+      errors: null,
+      message: 'Estoque do produto atualizado com sucesso',
+      data: productWithUpdatedStock,
+      pagination: null,
+    };
+
+    return formattedReturn;
+  }
+
+  protected async _get(id: number): Promise<Product> {
+    const product = await this.productRepository.findById(id);
+
+    if (!product) {
+      throw new NotFoundError([
+        {
+          property: null,
+          message: 'Produto não encontrado',
+        },
+      ]);
+    }
+
+    return product;
   }
 }

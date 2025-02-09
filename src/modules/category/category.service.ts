@@ -6,6 +6,7 @@ import { Category } from './entities/category.entity';
 import { IDefaultResponse } from 'src/shared/interfaces/default-response.interface';
 import { PaginationInterface } from 'src/shared/interfaces/pagination.interface';
 import { NotFoundError } from 'src/shared/errors/types/not-found.error';
+import { BadRequestError } from 'src/shared/errors/types/bad-request.error';
 
 @Injectable()
 export class CategoryService {
@@ -17,11 +18,8 @@ export class CategoryService {
     private readonly pagination: PaginationInterface,
   ) {}
 
-  async createCategory(
-    createCategoryDto: CreateCategoryDto,
-  ): Promise<IDefaultResponse<Category>> {
-    const createdCategory =
-      await this.categoryRepository.insert(createCategoryDto);
+  async createCategory(createCategoryDto: CreateCategoryDto): Promise<IDefaultResponse<Category>> {
+    const createdCategory = await this.categoryRepository.insert(createCategoryDto);
 
     const formattedReturn = {
       status_code: HttpStatus.OK,
@@ -29,7 +27,7 @@ export class CategoryService {
       error_type: null,
       errors: null,
       message: 'Categoria criada com sucesso',
-      data: { ...createdCategory },
+      data: createdCategory,
       pagination: null,
     };
 
@@ -43,15 +41,9 @@ export class CategoryService {
     search?: string,
   ): Promise<IDefaultResponse<Category[]>> {
     if (search) {
-      const filteredTotalItems =
-        await this.categoryRepository.countAllFiltered(search);
+      const filteredTotalItems = await this.categoryRepository.countAllFiltered(search);
 
-      const filteredProducts = await this.categoryRepository.findAllFiltered(
-        page,
-        limit,
-        orderBy,
-        search,
-      );
+      const filteredProducts = await this.categoryRepository.findAllFiltered(page, limit, orderBy, search);
 
       const formattedReturn = {
         status_code: HttpStatus.OK,
@@ -67,11 +59,7 @@ export class CategoryService {
     }
 
     const totalItems = await this.categoryRepository.countAll();
-    const categories = await this.categoryRepository.findAll(
-      page,
-      limit,
-      orderBy,
-    );
+    const categories = await this.categoryRepository.findAll(page, limit, orderBy);
 
     const formattedReturn = {
       status_code: HttpStatus.OK,
@@ -86,7 +74,7 @@ export class CategoryService {
     return formattedReturn;
   }
 
-  async findCategoryById(id: number): Promise<Category> {
+  async findCategoryById(id: number): Promise<IDefaultResponse<Category>> {
     const categoryAlreadyExist = await this._get(id);
 
     const formattedReturn = {
@@ -102,16 +90,19 @@ export class CategoryService {
     return formattedReturn;
   }
 
-  async updateCategory(
-    id: number,
-    updateCategoryDto: UpdateCategoryDto,
-  ): Promise<Category> {
+  async updateCategory(id: number, updateCategoryDto: UpdateCategoryDto): Promise<IDefaultResponse<Category>> {
     await this._get(id);
 
-    const updatedCategory = await this.categoryRepository.update(
-      id,
-      updateCategoryDto,
-    );
+    if (Object.keys(updateCategoryDto).length === 0) {
+      throw new BadRequestError([
+        {
+          property: null,
+          message: 'Nenhuma informação foi fornecida',
+        },
+      ]);
+    }
+
+    const updatedCategory = await this.categoryRepository.update(id, updateCategoryDto);
 
     const formattedReturn = {
       status_code: HttpStatus.OK,
