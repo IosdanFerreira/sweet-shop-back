@@ -3,7 +3,7 @@ import { CreateSupplierDto } from './dto/create-supplier.dto';
 import { UpdateSupplierDto } from './dto/update-supplier.dto';
 import { SupplierRepositoryInterface } from './interfaces/supplier-repository.interface';
 import { IDefaultResponse } from 'src/shared/interfaces/default-response.interface';
-import { Supplier } from './entities/supplier.entity';
+import { SupplierEntity } from './entities/supplier.entity';
 import { NotFoundError } from 'src/shared/errors/types/not-found.error';
 import { PaginationInterface } from 'src/shared/interfaces/pagination.interface';
 import { BadRequestError } from 'src/shared/errors/types/bad-request.error';
@@ -17,7 +17,7 @@ export class SupplierService {
     @Inject('PaginationInterface')
     private readonly pagination: PaginationInterface,
   ) {}
-  async createSupplier(createSupplierDto: CreateSupplierDto): Promise<IDefaultResponse<Supplier>> {
+  async createSupplier(createSupplierDto: CreateSupplierDto): Promise<IDefaultResponse<SupplierEntity>> {
     const createdSupplier = await this.supplierRepository.insert(createSupplierDto);
 
     const formattedReturn = {
@@ -33,7 +33,12 @@ export class SupplierService {
     return formattedReturn;
   }
 
-  async findAllSuppliers(page: number, limit: number, orderBy: 'asc' | 'desc' = 'desc', search?: string) {
+  async findAllSuppliers(
+    page: number,
+    limit: number,
+    orderBy: 'asc' | 'desc' = 'desc',
+    search?: string,
+  ): Promise<IDefaultResponse<SupplierEntity[]>> {
     if (search) {
       const filteredTotalItems = await this.supplierRepository.countAllFiltered(search);
 
@@ -69,7 +74,7 @@ export class SupplierService {
     return formattedReturn;
   }
 
-  async findSupplierById(id: number): Promise<IDefaultResponse<Supplier>> {
+  async findSupplierById(id: number): Promise<IDefaultResponse<SupplierEntity>> {
     const supplier = await this._get(id);
 
     const formattedReturn = {
@@ -85,7 +90,7 @@ export class SupplierService {
     return formattedReturn;
   }
 
-  async updateSupplier(id: number, updateSupplierDto: UpdateSupplierDto): Promise<IDefaultResponse<Supplier>> {
+  async updateSupplier(id: number, updateSupplierDto: UpdateSupplierDto): Promise<IDefaultResponse<SupplierEntity>> {
     await this._get(id);
 
     if (Object.keys(updateSupplierDto).length === 0) {
@@ -130,7 +135,7 @@ export class SupplierService {
     return formattedReturn;
   }
 
-  protected async _get(id: number): Promise<Supplier> {
+  protected async _get(id: number): Promise<SupplierEntity> {
     const supplier = await this.supplierRepository.findById(id);
 
     if (!supplier) {

@@ -3,12 +3,12 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductRepositoryInterface } from './interfaces/product-repository.interface';
 import { IDefaultResponse } from 'src/shared/interfaces/default-response.interface';
-import { Product } from './entities/product.entity';
 import { PaginationInterface } from 'src/shared/interfaces/pagination.interface';
 import { CategoryService } from '../category/category.service';
 import { SupplierService } from '../supplier/supplier.service';
 import { NotFoundError } from 'src/shared/errors/types/not-found.error';
 import { BadRequestError } from 'src/shared/errors/types/bad-request.error';
+import { ProductEntity } from './entities/product.entity';
 
 @Injectable()
 export class ProductsService {
@@ -23,7 +23,7 @@ export class ProductsService {
     private readonly supplierService: SupplierService,
   ) {}
 
-  async createProduct(createProductDto: CreateProductDto): Promise<IDefaultResponse<Product>> {
+  async createProduct(createProductDto: CreateProductDto): Promise<IDefaultResponse<ProductEntity>> {
     await this.categoryService.findCategoryById(createProductDto.category_id);
 
     await this.supplierService.findSupplierById(createProductDto.supplier_id);
@@ -43,7 +43,12 @@ export class ProductsService {
     return formattedReturn;
   }
 
-  async findAllProducts(page: number, limit: number, orderBy: 'asc' | 'desc' = 'desc', search?: string) {
+  async findAllProducts(
+    page: number,
+    limit: number,
+    orderBy: 'asc' | 'desc' = 'desc',
+    search?: string,
+  ): Promise<IDefaultResponse<ProductEntity[]>> {
     if (search) {
       const filteredTotalItems = await this.productRepository.countAllFiltered(search);
 
@@ -78,7 +83,7 @@ export class ProductsService {
     return formattedReturn;
   }
 
-  async findProductById(id: number) {
+  async findProductById(id: number): Promise<IDefaultResponse<ProductEntity>> {
     const product = await this._get(id);
 
     const formattedReturn = {
@@ -94,7 +99,7 @@ export class ProductsService {
     return formattedReturn;
   }
 
-  async updateProduct(id: number, updateProductDto: UpdateProductDto) {
+  async updateProduct(id: number, updateProductDto: UpdateProductDto): Promise<IDefaultResponse<ProductEntity>> {
     await this._get(id);
 
     if (Object.keys(updateProductDto).length === 0) {
@@ -121,7 +126,7 @@ export class ProductsService {
     return formattedReturn;
   }
 
-  async deleteProduct(id: number) {
+  async deleteProduct(id: number): Promise<IDefaultResponse<null>> {
     await this._get(id);
 
     await this.productRepository.remove(id);
@@ -139,41 +144,7 @@ export class ProductsService {
     return formattedReturn;
   }
 
-  async updateProductStock(id: number, quantity: number, type: 'increase' | 'decrease') {
-    await this._get(id);
-
-    if (type === 'decrease') {
-      const productWithUpdatedStock = await this.productRepository.decreaseStock(id, quantity);
-
-      const formattedReturn = {
-        status_code: HttpStatus.OK,
-        success: true,
-        error_type: null,
-        errors: null,
-        message: 'Estoque do produto atualizado com sucesso',
-        data: productWithUpdatedStock,
-        pagination: null,
-      };
-
-      return formattedReturn;
-    }
-
-    const productWithUpdatedStock = await this.productRepository.increaseStock(id, quantity);
-
-    const formattedReturn = {
-      status_code: HttpStatus.OK,
-      success: true,
-      error_type: null,
-      errors: null,
-      message: 'Estoque do produto atualizado com sucesso',
-      data: productWithUpdatedStock,
-      pagination: null,
-    };
-
-    return formattedReturn;
-  }
-
-  protected async _get(id: number): Promise<Product> {
+  protected async _get(id: number): Promise<ProductEntity> {
     const product = await this.productRepository.findById(id);
 
     if (!product) {

@@ -1,1 +1,6 @@
-export class Supplier {}
+export class SupplierEntity {
+  id: number;
+  name: string;
+  created_at: Date;
+  updated_at: Date;
+}

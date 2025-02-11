@@ -18,10 +18,6 @@ import { Pagination } from '../utils/pagination.utils';
       useClass: Pagination,
     },
   ],
-  exports: [
-    'RemoveAccentsInterface',
-    'HashProviderInterface',
-    'PaginationInterface',
-  ],
+  exports: ['RemoveAccentsInterface', 'HashProviderInterface', 'PaginationInterface'],
 })
 export class SharedModule {}

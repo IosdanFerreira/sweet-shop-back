@@ -1,9 +1,9 @@
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Category } from '../entities/category.entity';
 import { CategoryRepositoryInterface } from '../interfaces/category-repository.interface';
 import { RemoveAccentsInterface } from 'src/shared/interfaces/remove-accents.interface';
 import { CreateCategoryDto } from '../dto/create-category.dto';
 import { Inject } from '@nestjs/common';
+import { CategoryEntity } from '../entities/category.entity';
 
 export class CategoryRepository implements CategoryRepositoryInterface {
   constructor(
@@ -13,7 +13,7 @@ export class CategoryRepository implements CategoryRepositoryInterface {
     private readonly removeAccents: RemoveAccentsInterface,
   ) {}
 
-  async insert(createDto: CreateCategoryDto): Promise<Category> {
+  async insert(createDto: CreateCategoryDto): Promise<CategoryEntity> {
     return await this.prisma.category.create({
       data: {
         ...createDto,
@@ -30,7 +30,7 @@ export class CategoryRepository implements CategoryRepositoryInterface {
     });
   }
 
-  async findAll(page: number, limit: number, orderBy: 'asc' | 'desc' = 'desc'): Promise<Category[]> {
+  async findAll(page: number, limit: number, orderBy: 'asc' | 'desc' = 'desc'): Promise<CategoryEntity[]> {
     const skip = (page - 1) * limit;
 
     return await this.prisma.category.findMany({
@@ -53,7 +53,12 @@ export class CategoryRepository implements CategoryRepositoryInterface {
     });
   }
 
-  async findAllFiltered(page: number, limit: number, orderBy: 'asc' | 'desc' = 'desc', search: string): Promise<Category[]> {
+  async findAllFiltered(
+    page: number,
+    limit: number,
+    orderBy: 'asc' | 'desc' = 'desc',
+    search: string,
+  ): Promise<CategoryEntity[]> {
     const skip = (page - 1) * limit;
     return await this.prisma.category.findMany({
       where: {
@@ -123,7 +128,7 @@ export class CategoryRepository implements CategoryRepositoryInterface {
     });
   }
 
-  async findById(id: number): Promise<Category> {
+  async findById(id: number): Promise<CategoryEntity> {
     return await this.prisma.category.findUnique({
       where: {
         id,
@@ -140,7 +145,7 @@ export class CategoryRepository implements CategoryRepositoryInterface {
     });
   }
 
-  async update(id: number, updateDto: any): Promise<Category> {
+  async update(id: number, updateDto: any): Promise<CategoryEntity> {
     return await this.prisma.category.update({
       where: {
         id,

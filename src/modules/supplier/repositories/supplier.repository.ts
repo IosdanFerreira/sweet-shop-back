@@ -1,5 +1,5 @@
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Supplier } from '../entities/supplier.entity';
+import { SupplierEntity } from '../entities/supplier.entity';
 import { SupplierRepositoryInterface } from '../interfaces/supplier-repository.interface';
 import { Inject } from '@nestjs/common';
 import { RemoveAccentsInterface } from 'src/shared/interfaces/remove-accents.interface';
@@ -14,7 +14,7 @@ export class SupplierRepository implements SupplierRepositoryInterface {
     private readonly removeAccents: RemoveAccentsInterface,
   ) {}
 
-  async insert(createDto: CreateSupplierDto): Promise<Supplier> {
+  async insert(createDto: CreateSupplierDto): Promise<SupplierEntity> {
     return await this.prisma.supplier.create({
       data: {
         ...createDto,
@@ -33,11 +33,7 @@ export class SupplierRepository implements SupplierRepositoryInterface {
     });
   }
 
-  async findAll(
-    page: number,
-    limit: number,
-    orderBy: 'asc' | 'desc',
-  ): Promise<Supplier[]> {
+  async findAll(page: number, limit: number, orderBy: 'asc' | 'desc'): Promise<SupplierEntity[]> {
     const skip = (page - 1) * limit;
 
     return await this.prisma.supplier.findMany({
@@ -74,7 +70,7 @@ export class SupplierRepository implements SupplierRepositoryInterface {
     limit: number,
     orderBy: 'asc' | 'desc',
     search: string,
-  ): Promise<Supplier[]> {
+  ): Promise<SupplierEntity[]> {
     const skip = (page - 1) * limit;
 
     return await this.prisma.supplier.findMany({
@@ -137,7 +133,7 @@ export class SupplierRepository implements SupplierRepositoryInterface {
       },
     });
   }
-  async findById(id: number): Promise<Supplier> {
+  async findById(id: number): Promise<SupplierEntity> {
     return await this.prisma.supplier.findUnique({
       where: {
         id,
@@ -155,7 +151,7 @@ export class SupplierRepository implements SupplierRepositoryInterface {
       },
     });
   }
-  async update(id: number, updateDto: UpdateSupplierDto): Promise<Supplier> {
+  async update(id: number, updateDto: UpdateSupplierDto): Promise<SupplierEntity> {
     return await this.prisma.supplier.update({
       where: {
         id,

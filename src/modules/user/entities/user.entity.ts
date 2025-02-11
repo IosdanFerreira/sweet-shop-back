@@ -1,4 +1,4 @@
-import { Role } from 'src/modules/role/entities/role.entity';
+import { RoleEntity } from 'src/modules/role/entities/role.entity';
 
 export class User {
   id: number;
@@ -9,7 +9,7 @@ export class User {
   phone: string;
   address?: string;
   privacy_consent: boolean;
-  role: Role;
+  role: RoleEntity;
   deleted?: boolean;
   created_at: Date;
   updated_at: Date;

@@ -3,7 +3,7 @@ import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { RoleRepositoryInterface } from './interfaces/role-repository.interface';
 import { IDefaultResponse } from 'src/shared/interfaces/default-response.interface';
-import { Role } from './entities/role.entity';
+import { RoleEntity } from './entities/role.entity';
 import { NotFoundError } from 'src/shared/errors/types/not-found.error';
 import { BadRequestError } from 'src/shared/errors/types/bad-request.error';
 
@@ -14,7 +14,7 @@ export class RoleService {
     private readonly roleRepository: RoleRepositoryInterface,
   ) {}
 
-  async createRole(createRoleDto: CreateRoleDto): Promise<IDefaultResponse<Role>> {
+  async createRole(createRoleDto: CreateRoleDto): Promise<IDefaultResponse<RoleEntity>> {
     const createdRole = await this.roleRepository.insert(createRoleDto);
 
     const formattedRole = {
@@ -30,7 +30,7 @@ export class RoleService {
     return formattedRole;
   }
 
-  async findAllRoles(): Promise<IDefaultResponse<Role[]>> {
+  async findAllRoles(): Promise<IDefaultResponse<RoleEntity[]>> {
     const roles = await this.roleRepository.findAll(null, null, null);
 
     const formattedRoles = {
@@ -46,7 +46,7 @@ export class RoleService {
     return formattedRoles;
   }
 
-  async findRoleById(id: number): Promise<IDefaultResponse<Role>> {
+  async findRoleById(id: number): Promise<IDefaultResponse<RoleEntity>> {
     const foundedRole = await this._get(id);
 
     const formattedRole = {
@@ -62,7 +62,7 @@ export class RoleService {
     return formattedRole;
   }
 
-  async updateRole(id: number, updateRoleDto: UpdateRoleDto): Promise<IDefaultResponse<Role>> {
+  async updateRole(id: number, updateRoleDto: UpdateRoleDto): Promise<IDefaultResponse<RoleEntity>> {
     await this._get(id);
 
     if (Object.keys(updateRoleDto).length === 0) {
@@ -107,7 +107,7 @@ export class RoleService {
     return formattedRole;
   }
 
-  protected async _get(id: number): Promise<Role> {
+  protected async _get(id: number): Promise<RoleEntity> {
     const role = await this.roleRepository.findById(id);
 
     if (!role) {

@@ -2,7 +2,7 @@ import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { CategoryRepositoryInterface } from './interfaces/category-repository.interface';
-import { Category } from './entities/category.entity';
+import { CategoryEntity } from './entities/category.entity';
 import { IDefaultResponse } from 'src/shared/interfaces/default-response.interface';
 import { PaginationInterface } from 'src/shared/interfaces/pagination.interface';
 import { NotFoundError } from 'src/shared/errors/types/not-found.error';
@@ -18,7 +18,7 @@ export class CategoryService {
     private readonly pagination: PaginationInterface,
   ) {}
 
-  async createCategory(createCategoryDto: CreateCategoryDto): Promise<IDefaultResponse<Category>> {
+  async createCategory(createCategoryDto: CreateCategoryDto): Promise<IDefaultResponse<CategoryEntity>> {
     const createdCategory = await this.categoryRepository.insert(createCategoryDto);
 
     const formattedReturn = {
@@ -39,7 +39,7 @@ export class CategoryService {
     limit: number,
     orderBy: 'asc' | 'desc' = 'desc',
     search?: string,
-  ): Promise<IDefaultResponse<Category[]>> {
+  ): Promise<IDefaultResponse<CategoryEntity[]>> {
     if (search) {
       const filteredTotalItems = await this.categoryRepository.countAllFiltered(search);
 
@@ -74,7 +74,7 @@ export class CategoryService {
     return formattedReturn;
   }
 
-  async findCategoryById(id: number): Promise<IDefaultResponse<Category>> {
+  async findCategoryById(id: number): Promise<IDefaultResponse<CategoryEntity>> {
     const categoryAlreadyExist = await this._get(id);
 
     const formattedReturn = {
@@ -90,7 +90,7 @@ export class CategoryService {
     return formattedReturn;
   }
 
-  async updateCategory(id: number, updateCategoryDto: UpdateCategoryDto): Promise<IDefaultResponse<Category>> {
+  async updateCategory(id: number, updateCategoryDto: UpdateCategoryDto): Promise<IDefaultResponse<CategoryEntity>> {
     await this._get(id);
 
     if (Object.keys(updateCategoryDto).length === 0) {
@@ -135,7 +135,7 @@ export class CategoryService {
     return formattedReturn;
   }
 
-  protected async _get(id: number): Promise<Category> {
+  protected async _get(id: number): Promise<CategoryEntity> {
     const category = await this.categoryRepository.findById(id);
 
     if (!category) {

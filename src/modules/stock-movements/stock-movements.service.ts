@@ -3,6 +3,8 @@ import { CreateStockMovementDto } from './dto/create-stock-movement.dto';
 import { StockMovementsRepositoryInterface } from './interfaces/stock-movements-repository.interface';
 import { ProductsService } from '../products/products.service';
 import { PaginationInterface } from 'src/shared/interfaces/pagination.interface';
+import { IDefaultResponse } from 'src/shared/interfaces/default-response.interface';
+import { StockMovementEntity } from './entities/stock-movement.entity';
 
 @Injectable()
 export class StockMovementsService {
@@ -16,55 +18,51 @@ export class StockMovementsService {
     private readonly pagination: PaginationInterface,
   ) {}
 
-  async registerStockEntry(createStockMovementDto: CreateStockMovementDto) {
+  async registerStockEntry(
+    createStockMovementDto: CreateStockMovementDto,
+  ): Promise<IDefaultResponse<StockMovementEntity>> {
     await this.productsService.findProductById(createStockMovementDto.product_id);
 
     const stockMovement = await this.stockMovementsRepository.registerEntry(createStockMovementDto);
 
-    const updatedStock = await this.productsService.updateProductStock(
-      createStockMovementDto.product_id,
-      createStockMovementDto.quantity,
-      'increase',
-    );
-
     const formattedReturn = {
       status_code: HttpStatus.CREATED,
       success: true,
       error_type: null,
       errors: null,
       message: 'Estoque do produto atualizado com sucesso',
-      data: { ...stockMovement, product: updatedStock.data },
+      data: { ...stockMovement },
       pagination: null,
     };
 
     return formattedReturn;
   }
 
-  async registerStockExit(createStockMovementDto: CreateStockMovementDto) {
+  async registerStockExit(
+    createStockMovementDto: CreateStockMovementDto,
+  ): Promise<IDefaultResponse<StockMovementEntity>> {
     await this.productsService.findProductById(createStockMovementDto.product_id);
 
     const stockMovement = await this.stockMovementsRepository.registerExit(createStockMovementDto);
 
-    const updatedStock = await this.productsService.updateProductStock(
-      createStockMovementDto.product_id,
-      createStockMovementDto.quantity,
-      'decrease',
-    );
-
     const formattedReturn = {
       status_code: HttpStatus.CREATED,
       success: true,
       error_type: null,
       errors: null,
       message: 'Estoque do produto atualizado com sucesso',
-      data: { ...stockMovement, product: updatedStock.data },
+      data: { ...stockMovement },
       pagination: null,
     };
 
     return formattedReturn;
   }
 
-  async findAllStockMovements(page: number, limit: number, orderBy: 'asc' | 'desc' = 'desc') {
+  async findAllStockMovements(
+    page: number,
+    limit: number,
+    orderBy: 'asc' | 'desc' = 'desc',
+  ): Promise<IDefaultResponse<StockMovementEntity[]>> {
     const totalItems = await this.stockMovementsRepository.countAll();
 
     const stockMovements = await this.stockMovementsRepository.getMovements(page, limit, orderBy);

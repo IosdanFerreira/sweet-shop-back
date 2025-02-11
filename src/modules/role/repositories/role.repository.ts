@@ -1,5 +1,5 @@
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Role } from '../entities/role.entity';
+import { RoleEntity } from '../entities/role.entity';
 import { RoleRepositoryInterface } from '../interfaces/role-repository.interface';
 import { CreateRoleDto } from '../dto/create-role.dto';
 import { UpdateRoleDto } from '../dto/update-role.dto';
@@ -11,7 +11,7 @@ export class RoleRepository implements RoleRepositoryInterface {
     private readonly removeAccents: RemoveAccentsInterface,
   ) {}
 
-  async insert(createRoleDto: CreateRoleDto): Promise<Role> {
+  async insert(createRoleDto: CreateRoleDto): Promise<RoleEntity> {
     const createdRole = await this.prisma.role.create({
       data: {
         ...createRoleDto,
@@ -30,7 +30,7 @@ export class RoleRepository implements RoleRepositoryInterface {
     return createdRole;
   }
 
-  async findAll(): Promise<Role[]> {
+  async findAll(): Promise<RoleEntity[]> {
     const roles = await this.prisma.role.findMany({
       where: {
         deleted: false,
@@ -51,7 +51,7 @@ export class RoleRepository implements RoleRepositoryInterface {
     return roles;
   }
 
-  async findById(id: number): Promise<Role> {
+  async findById(id: number): Promise<RoleEntity> {
     const foundedRole = await this.prisma.role.findUnique({
       where: {
         id,
@@ -70,7 +70,7 @@ export class RoleRepository implements RoleRepositoryInterface {
     return foundedRole;
   }
 
-  async update(id: number, updateRoleDto: UpdateRoleDto): Promise<Role> {
+  async update(id: number, updateRoleDto: UpdateRoleDto): Promise<RoleEntity> {
     const updatedRole = await this.prisma.role.update({
       where: {
         id,

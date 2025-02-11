@@ -1,5 +1,5 @@
 import { ProductRepositoryInterface } from '../interfaces/product-repository.interface';
-import { Product } from '../entities/product.entity';
+import { ProductEntity } from '../entities/product.entity';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateProductDto } from '../dto/create-product.dto';
 import { RemoveAccentsInterface } from 'src/shared/interfaces/remove-accents.interface';
@@ -14,7 +14,7 @@ export class ProductRepository implements ProductRepositoryInterface {
     private readonly removeAccents: RemoveAccentsInterface,
   ) {}
 
-  async insert(createDto: CreateProductDto): Promise<Product> {
+  async insert(createDto: CreateProductDto): Promise<ProductEntity> {
     const { category_id, supplier_id, ...rest } = createDto;
 
     const data: Prisma.ProductCreateInput = {
@@ -48,12 +48,16 @@ export class ProductRepository implements ProductRepositoryInterface {
           select: {
             id: true,
             name: true,
+            created_at: true,
+            updated_at: true,
           },
         },
         supplier: {
           select: {
             id: true,
             name: true,
+            created_at: true,
+            updated_at: true,
           },
         },
         deleted: false,
@@ -63,7 +67,7 @@ export class ProductRepository implements ProductRepositoryInterface {
     });
   }
 
-  async findAll(page: number, limit: number, orderBy: 'asc' | 'desc' = 'desc'): Promise<Product[]> {
+  async findAll(page: number, limit: number, orderBy: 'asc' | 'desc' = 'desc'): Promise<ProductEntity[]> {
     const skip = (page - 1) * limit;
 
     return await this.prisma.product.findMany({
@@ -88,12 +92,16 @@ export class ProductRepository implements ProductRepositoryInterface {
           select: {
             id: true,
             name: true,
+            created_at: true,
+            updated_at: true,
           },
         },
         supplier: {
           select: {
             id: true,
             name: true,
+            created_at: true,
+            updated_at: true,
           },
         },
         deleted: false,
@@ -103,7 +111,12 @@ export class ProductRepository implements ProductRepositoryInterface {
     });
   }
 
-  async findAllFiltered(page: number, limit: number, orderBy: 'asc' | 'desc', search: string): Promise<Product[]> {
+  async findAllFiltered(
+    page: number,
+    limit: number,
+    orderBy: 'asc' | 'desc',
+    search: string,
+  ): Promise<ProductEntity[]> {
     const skip = (page - 1) * limit;
 
     return await this.prisma.product.findMany({
@@ -156,12 +169,16 @@ export class ProductRepository implements ProductRepositoryInterface {
           select: {
             id: true,
             name: true,
+            created_at: true,
+            updated_at: true,
           },
         },
         supplier: {
           select: {
             id: true,
             name: true,
+            created_at: true,
+            updated_at: true,
           },
         },
         deleted: false,
@@ -213,7 +230,7 @@ export class ProductRepository implements ProductRepositoryInterface {
       },
     });
   }
-  async findById(id: number): Promise<Product> {
+  async findById(id: number): Promise<ProductEntity> {
     return await this.prisma.product.findUnique({
       where: {
         id,
@@ -232,12 +249,16 @@ export class ProductRepository implements ProductRepositoryInterface {
           select: {
             id: true,
             name: true,
+            created_at: true,
+            updated_at: true,
           },
         },
         supplier: {
           select: {
             id: true,
             name: true,
+            created_at: true,
+            updated_at: true,
           },
         },
         deleted: false,
@@ -246,7 +267,7 @@ export class ProductRepository implements ProductRepositoryInterface {
       },
     });
   }
-  async update(id: number, updateDto: any): Promise<Product> {
+  async update(id: number, updateDto: any): Promise<ProductEntity> {
     return await this.prisma.product.update({
       where: {
         id,
@@ -270,12 +291,16 @@ export class ProductRepository implements ProductRepositoryInterface {
           select: {
             id: true,
             name: true,
+            created_at: true,
+            updated_at: true,
           },
         },
         supplier: {
           select: {
             id: true,
             name: true,
+            created_at: true,
+            updated_at: true,
           },
         },
         deleted: false,
@@ -293,92 +318,6 @@ export class ProductRepository implements ProductRepositoryInterface {
       },
       data: {
         deleted: true,
-      },
-    });
-  }
-
-  async increaseStock(id: number, quantity: number): Promise<Product> {
-    return await this.prisma.product.update({
-      where: {
-        id,
-        deleted: false,
-      },
-      data: {
-        stock: {
-          increment: quantity,
-        },
-      },
-      select: {
-        id: true,
-        name: true,
-        name_unaccented: false,
-        description: true,
-        description_unaccented: false,
-        purchase_price: true,
-        selling_price: true,
-        stock: true,
-        category: {
-          select: {
-            id: true,
-            name: true,
-            created_at: true,
-            updated_at: true,
-          },
-        },
-        supplier: {
-          select: {
-            id: true,
-            name: true,
-            created_at: true,
-            updated_at: true,
-          },
-        },
-        deleted: false,
-        created_at: true,
-        updated_at: true,
-      },
-    });
-  }
-
-  async decreaseStock(id: number, quantity: number): Promise<Product> {
-    return await this.prisma.product.update({
-      where: {
-        id,
-        deleted: false,
-      },
-      data: {
-        stock: {
-          decrement: quantity,
-        },
-      },
-      select: {
-        id: true,
-        name: true,
-        name_unaccented: false,
-        description: true,
-        description_unaccented: false,
-        purchase_price: true,
-        selling_price: true,
-        stock: true,
-        category: {
-          select: {
-            id: true,
-            name: true,
-            created_at: true,
-            updated_at: true,
-          },
-        },
-        supplier: {
-          select: {
-            id: true,
-            name: true,
-            created_at: true,
-            updated_at: true,
-          },
-        },
-        deleted: false,
-        created_at: true,
-        updated_at: true,
       },
     });
   }

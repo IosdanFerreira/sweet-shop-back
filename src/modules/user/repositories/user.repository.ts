@@ -31,6 +31,8 @@ export class UserRepository implements UserRepositoryInterface {
           select: {
             id: true,
             name: true,
+            created_at: true,
+            updated_at: true,
           },
         },
         deleted: false,
@@ -64,6 +66,8 @@ export class UserRepository implements UserRepositoryInterface {
           select: {
             id: true,
             name: true,
+            created_at: true,
+            updated_at: true,
           },
         },
         deleted: false,
@@ -107,6 +111,8 @@ export class UserRepository implements UserRepositoryInterface {
           select: {
             id: true,
             name: true,
+            created_at: true,
+            updated_at: true,
           },
         },
         deleted: false,
@@ -153,6 +159,8 @@ export class UserRepository implements UserRepositoryInterface {
           select: {
             id: true,
             name: true,
+            created_at: true,
+            updated_at: true,
           },
         },
         deleted: false,

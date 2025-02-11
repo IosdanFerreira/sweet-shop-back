@@ -14,10 +14,7 @@ import { SharedModule } from 'src/shared/modules/shared-module.module';
     PrismaService,
     {
       provide: 'CategoryRepositoryInterface',
-      useFactory: (
-        prismaService: PrismaService,
-        removeAccents: RemoveAccentsInterface,
-      ) => {
+      useFactory: (prismaService: PrismaService, removeAccents: RemoveAccentsInterface) => {
         return new CategoryRepository(prismaService, removeAccents);
       },
       inject: [PrismaService, 'RemoveAccentsInterface'],
