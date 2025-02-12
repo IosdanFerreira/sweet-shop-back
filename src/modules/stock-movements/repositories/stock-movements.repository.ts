@@ -8,6 +8,46 @@ export class StockMovementsRepository implements StockMovementsRepositoryInterfa
 
   async registerEntry(stockMovementDTO: CreateStockMovementDto): Promise<StockMovementEntity> {
     return await this.prisma.$transaction(async (prisma) => {
+      const productWithUpdatedStock = await prisma.product.update({
+        where: {
+          id: stockMovementDTO.product_id,
+        },
+        data: {
+          stock: {
+            increment: stockMovementDTO.quantity,
+          },
+        },
+        select: {
+          id: true,
+          name: true,
+          name_unaccented: false,
+          description: true,
+          description_unaccented: false,
+          purchase_price: true,
+          selling_price: true,
+          stock: true,
+          category: {
+            select: {
+              id: true,
+              name: true,
+              created_at: true,
+              updated_at: true,
+            },
+          },
+          supplier: {
+            select: {
+              id: true,
+              name: true,
+              created_at: true,
+              updated_at: true,
+            },
+          },
+          deleted: false,
+          created_at: true,
+          updated_at: true,
+        },
+      });
+
       const stockMovement = await this.prisma.stockMovement.create({
         data: {
           ...stockMovementDTO,
@@ -24,13 +64,22 @@ export class StockMovementsRepository implements StockMovementsRepositoryInterfa
         },
       });
 
+      return {
+        ...stockMovement,
+        product: productWithUpdatedStock,
+      };
+    });
+  }
+
+  async registerExit(stockMovementDTO: CreateStockMovementDto): Promise<StockMovementEntity> {
+    return await this.prisma.$transaction(async (prisma) => {
       const productWithUpdatedStock = await prisma.product.update({
         where: {
           id: stockMovementDTO.product_id,
         },
         data: {
           stock: {
-            increment: stockMovementDTO.quantity,
+            decrement: stockMovementDTO.quantity,
           },
         },
         select: {
@@ -64,15 +113,6 @@ export class StockMovementsRepository implements StockMovementsRepositoryInterfa
         },
       });
 
-      return {
-        ...stockMovement,
-        product: productWithUpdatedStock,
-      };
-    });
-  }
-
-  async registerExit(stockMovementDTO: CreateStockMovementDto): Promise<StockMovementEntity> {
-    return await this.prisma.$transaction(async (prisma) => {
       const stockMovement = await this.prisma.stockMovement.create({
         data: {
           ...stockMovementDTO,
@@ -89,46 +129,6 @@ export class StockMovementsRepository implements StockMovementsRepositoryInterfa
         },
       });
 
-      const productWithUpdatedStock = await prisma.product.update({
-        where: {
-          id: stockMovementDTO.product_id,
-        },
-        data: {
-          stock: {
-            increment: stockMovementDTO.quantity,
-          },
-        },
-        select: {
-          id: true,
-          name: true,
-          name_unaccented: false,
-          description: true,
-          description_unaccented: false,
-          purchase_price: true,
-          selling_price: true,
-          stock: true,
-          category: {
-            select: {
-              id: true,
-              name: true,
-              created_at: true,
-              updated_at: true,
-            },
-          },
-          supplier: {
-            select: {
-              id: true,
-              name: true,
-              created_at: true,
-              updated_at: true,
-            },
-          },
-          deleted: false,
-          created_at: true,
-          updated_at: true,
-        },
-      });
-
       return {
         ...stockMovement,
         product: productWithUpdatedStock,
@@ -140,10 +140,10 @@ export class StockMovementsRepository implements StockMovementsRepositoryInterfa
     const skip = (page - 1) * limit;
 
     return await this.prisma.stockMovement.findMany({
-      skip,
       take: limit,
+      skip,
       orderBy: {
-        created_at: orderBy,
+        id: orderBy,
       },
       select: {
         id: true,

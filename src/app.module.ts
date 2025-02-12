@@ -12,6 +12,7 @@ import { CategoryModule } from './modules/category/category.module';
 import { SharedModule } from './shared/modules/shared-module.module';
 import { SupplierModule } from './modules/supplier/supplier.module';
 import { StockMovementsModule } from './modules/stock-movements/stock-movements.module';
+import { SaleModule } from './modules/sale/sale.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { StockMovementsModule } from './modules/stock-movements/stock-movements.
     SharedModule,
     SupplierModule,
     StockMovementsModule,
+    SaleModule,
   ],
   controllers: [AppController],
   providers: [

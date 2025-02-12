@@ -76,6 +76,7 @@ export class StockMovementsService {
       data: stockMovements,
       pagination: this.pagination.generate(totalItems, page, limit),
     };
+
     return formattedReturn;
   }
 }
