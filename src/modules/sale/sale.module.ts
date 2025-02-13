@@ -4,6 +4,7 @@ import { SaleController } from './sale.controller';
 import { SharedModule } from 'src/shared/modules/shared-module.module';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { SalesRepository } from './repositories/sales.repository';
+import { RemoveAccentsInterface } from 'src/shared/interfaces/remove-accents.interface';
 
 @Module({
   imports: [SharedModule],
@@ -13,10 +14,10 @@ import { SalesRepository } from './repositories/sales.repository';
     PrismaService,
     {
       provide: 'SalesRepositoryInterface',
-      useFactory: (prismaService: PrismaService) => {
-        return new SalesRepository(prismaService);
+      useFactory: (prismaService: PrismaService, removeAccents: RemoveAccentsInterface) => {
+        return new SalesRepository(prismaService, removeAccents);
       },
-      inject: [PrismaService],
+      inject: [PrismaService, 'RemoveAccentsInterface'],
     },
   ],
   exports: [SaleService],

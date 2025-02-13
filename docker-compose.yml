@@ -4,8 +4,8 @@ services:
     entrypoint: /home/node/app/.docker/entrypoint.sh
     container_name: healthcare-back-app
     ports:
-      - '3001:3001'
-      - '5555:5555'
+      - '3001:3001' # Expose app port
+      - '5555:5555' # Expose prisma studio port
     volumes:
       - .:/home/node/app
     depends_on:
@@ -18,7 +18,7 @@ services:
     ports:
       - '5432:5432'
     volumes:
-      - .docker/dbdata:/var/lib/postgresql/datas
+      - .docker/dbdata:/var/lib/postgresql/data
     environment:
       - TZ=America/Sao_Paulo
       - PGTZ=America/Sao_Paulo

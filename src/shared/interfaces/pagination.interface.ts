@@ -8,9 +8,5 @@ export interface PaginationResponseInterface {
 }
 
 export interface PaginationInterface {
-  generate(
-    totalItems: number,
-    page: number,
-    limit: number,
-  ): PaginationResponseInterface;
+  generate(totalItems: number, page: number, limit: number): PaginationResponseInterface;
 }

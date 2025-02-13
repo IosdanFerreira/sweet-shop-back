@@ -21,7 +21,19 @@ export class StockMovementsController {
     @Query('page') page: number,
     @Query('limit') limit: number,
     @Query('order_by') orderBy: 'asc' | 'desc' = 'desc',
+    @Query('start_date') startDate?: string,
+    @Query('end_date') endDate?: string,
+    @Query('exact_date') exactDate?: string,
+    @Query('product_name') productName?: string,
   ) {
-    return this.stockMovementsService.findAllStockMovements(page, limit, orderBy);
+    return this.stockMovementsService.findAllStockMovements(
+      page,
+      limit,
+      orderBy,
+      startDate,
+      endDate,
+      exactDate,
+      productName,
+    );
   }
 }

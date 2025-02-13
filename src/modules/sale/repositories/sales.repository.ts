@@ -5,9 +5,17 @@ import { SaleEntity } from '../entities/sale.entity';
 import { SaleItemEntity } from '../entities/sale-item.entity';
 import { NotFoundError } from 'src/shared/errors/types/not-found.error';
 import { BadRequestError } from 'src/shared/errors/types/bad-request.error';
+import { RemoveAccentsInterface } from 'src/shared/interfaces/remove-accents.interface';
+import { Inject } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 
 export class SalesRepository implements SalesRepositoryInterface {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+
+    @Inject('RemoveAccentsInterface')
+    private readonly removeAccents: RemoveAccentsInterface,
+  ) {}
 
   /**
    * Registra uma nova compra
@@ -15,7 +23,7 @@ export class SalesRepository implements SalesRepositoryInterface {
    * @param {CreateSaleDto[]} createSaleDto
    * @returns {Promise<SaleEntity>}
    */
-  async registerSale(createSaleDto: CreateSaleDto[]): Promise<SaleEntity> {
+  async register(createSaleDto: CreateSaleDto[]): Promise<SaleEntity> {
     return await this.prisma.$transaction(async (prisma) => {
       // Variáveis que armazena o total da compra
       let totalSalePrice = 0;
@@ -165,13 +173,16 @@ export class SalesRepository implements SalesRepositoryInterface {
     });
   }
 
-  async getAllSales(page: number, limit: number, orderBy: 'asc' | 'desc' = 'desc'): Promise<SaleEntity[]> {
+  async findAll(
+    page: number,
+    limit: number,
+    orderBy: 'asc' | 'desc' = 'desc',
+    conditionalFilters: Prisma.SaleWhereInput,
+  ): Promise<SaleEntity[]> {
     const skip = (page - 1) * limit;
 
     return await this.prisma.sale.findMany({
-      where: {
-        deleted: false,
-      },
+      where: conditionalFilters,
       skip,
       take: limit,
       orderBy: {
@@ -218,6 +229,12 @@ export class SalesRepository implements SalesRepositoryInterface {
           },
         },
       },
+    });
+  }
+
+  async countAll(conditionalFilters?: Prisma.SaleWhereInput): Promise<number> {
+    return await this.prisma.sale.count({
+      where: conditionalFilters,
     });
   }
 }

@@ -2,6 +2,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { StockMovementEntity } from '../entities/stock-movement.entity';
 import { StockMovementsRepositoryInterface } from '../interfaces/stock-movements-repository.interface';
 import { CreateStockMovementDto } from '../dto/create-stock-movement.dto';
+import { Prisma } from '@prisma/client';
 
 export class StockMovementsRepository implements StockMovementsRepositoryInterface {
   constructor(private readonly prisma: PrismaService) {}
@@ -136,10 +137,16 @@ export class StockMovementsRepository implements StockMovementsRepositoryInterfa
     });
   }
 
-  async getMovements(page: number, limit: number, orderBy: 'asc' | 'desc' = 'desc'): Promise<StockMovementEntity[]> {
+  async getMovements(
+    page: number,
+    limit: number,
+    orderBy: 'asc' | 'desc' = 'desc',
+    conditionalFilters?: Prisma.StockMovementWhereInput,
+  ): Promise<StockMovementEntity[]> {
     const skip = (page - 1) * limit;
 
     return await this.prisma.stockMovement.findMany({
+      where: conditionalFilters,
       take: limit,
       skip,
       orderBy: {
@@ -186,7 +193,9 @@ export class StockMovementsRepository implements StockMovementsRepositoryInterfa
     });
   }
 
-  async countAll(): Promise<number> {
-    return await this.prisma.stockMovement.count();
+  async countAll(conditionalFilters: Prisma.StockMovementWhereInput): Promise<number> {
+    return await this.prisma.stockMovement.count({
+      where: conditionalFilters,
+    });
   }
 }
