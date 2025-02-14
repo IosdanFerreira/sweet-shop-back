@@ -36,7 +36,7 @@ export class ProductsService {
       error_type: null,
       errors: null,
       message: 'Produto criado com sucesso',
-      data: { ...createdProduct },
+      data: createdProduct,
       pagination: null,
     };
 

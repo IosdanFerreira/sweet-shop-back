@@ -108,6 +108,8 @@ model Sale {
   updated_at DateTime @default(now())
 
   items SaleItem[]
+
+  @@map("sales")
 }
 
 model SaleItem {
