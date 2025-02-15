@@ -14,6 +14,7 @@ import { SupplierModule } from './modules/supplier/supplier.module';
 import { StockMovementsModule } from './modules/stock-movements/stock-movements.module';
 import { SaleModule } from './modules/sale/sale.module';
 import { ReportModule } from './modules/report/report.module';
+import { CashFlowModule } from './modules/cash-flow/cash-flow.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { ReportModule } from './modules/report/report.module';
     StockMovementsModule,
     SaleModule,
     ReportModule,
+    CashFlowModule,
   ],
   controllers: [AppController],
   providers: [

@@ -6,10 +6,21 @@ import { BadRequestInterceptor } from './shared/errors/interceptors/bad-request.
 import { ConflictInterceptor } from './shared/errors/interceptors/conflict.interceptor';
 import { NotFoundInterceptor } from './shared/errors/interceptors/not-found.interceptor';
 import { DatabaseInterceptor } from './shared/errors/interceptors/database.interceptor';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   // Cria uma instância do Nest
   const app = await NestFactory.create(AppModule);
+
+  // Configura o Swagger
+  const config = new DocumentBuilder()
+    .setTitle('Cats example')
+    .setDescription('The cats API description')
+    .setVersion('1.0')
+    .addTag('cats')
+    .build();
+  const documentFactory = () => SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, documentFactory);
 
   // Intercepta os erros lançados na aplicação para exibi-los de forma customizada
   app.useGlobalInterceptors(
@@ -36,6 +47,6 @@ async function bootstrap() {
     }),
   );
 
-  await app.listen(3001);
+  await app.listen(process.env.APP_PORT || 3001);
 }
 bootstrap();
