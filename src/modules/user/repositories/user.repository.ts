@@ -2,7 +2,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { UserRepositoryInterface } from '../interfaces/user.repository.interface';
-import { User } from '../entities/user.entity';
+import { UserEntity } from '../entities/user.entity';
 import { RemoveAccentsInterface } from 'src/shared/interfaces/remove-accents.interface';
 
 export class UserRepository implements UserRepositoryInterface {
@@ -11,7 +11,7 @@ export class UserRepository implements UserRepositoryInterface {
     private readonly removeAccents: RemoveAccentsInterface,
   ) {}
 
-  async insert(createDto: CreateUserDto): Promise<User> {
+  async insert(createDto: CreateUserDto): Promise<UserEntity> {
     const newUser = await this.prisma.user.create({
       data: {
         ...createDto,
@@ -44,7 +44,7 @@ export class UserRepository implements UserRepositoryInterface {
     return newUser;
   }
 
-  async findByEmail(email: string): Promise<User> {
+  async findByEmail(email: string): Promise<UserEntity> {
     const user = await this.prisma.user.findUnique({
       where: {
         email,
@@ -79,13 +79,13 @@ export class UserRepository implements UserRepositoryInterface {
     return user;
   }
 
-  async findById(id: number): Promise<User> {
+  async findById(id: number): Promise<UserEntity> {
     const user = await this._get(id);
 
     return user;
   }
 
-  async update(id: number, updateDto: UpdateUserDto): Promise<User> {
+  async update(id: number, updateDto: UpdateUserDto): Promise<UserEntity> {
     const updatedUser = await this.prisma.user.update({
       where: {
         id,
@@ -138,7 +138,7 @@ export class UserRepository implements UserRepositoryInterface {
     });
   }
 
-  protected async _get(id: number): Promise<User> {
+  protected async _get(id: number): Promise<UserEntity> {
     const user = await this.prisma.user.findUnique({
       where: {
         id,

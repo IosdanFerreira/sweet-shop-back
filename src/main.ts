@@ -1,12 +1,13 @@
-import { NestFactory } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
 import { BadRequestError } from './shared/errors/types/bad-request.error';
 import { BadRequestInterceptor } from './shared/errors/interceptors/bad-request.interceptor';
 import { ConflictInterceptor } from './shared/errors/interceptors/conflict.interceptor';
-import { NotFoundInterceptor } from './shared/errors/interceptors/not-found.interceptor';
 import { DatabaseInterceptor } from './shared/errors/interceptors/database.interceptor';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { NestFactory } from '@nestjs/core';
+import { NotFoundInterceptor } from './shared/errors/interceptors/not-found.interceptor';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   // Cria uma instância do Nest

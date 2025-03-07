@@ -7,7 +7,7 @@ import { ConfigType } from '@nestjs/config';
 import { UserWithToken } from './interfaces/user-with-token.interface';
 import { SignInDto } from './dto/signin.dto';
 import { generateTokens } from './utils/generate-user-tokens.utils';
-import { User } from './entities/user.entity';
+import { UserEntity } from './entities/user.entity';
 import { BadRequestError } from 'src/shared/errors/types/bad-request.error';
 import { ConflictError } from 'src/shared/errors/types/conflict.error';
 import { NotFoundError } from 'src/shared/errors/types/not-found.error';
@@ -30,7 +30,7 @@ export class UserService {
     private refreshTokenConfig: ConfigType<typeof refreshJwtConfig>,
   ) {}
 
-  async createUser(createUserDto: CreateUserDto): Promise<IDefaultResponse<User>> {
+  async createUser(createUserDto: CreateUserDto): Promise<IDefaultResponse<UserEntity>> {
     // Checa se o email do usuário ja existe
     const userAlreadyExists = await this.userRepository.findByEmail(createUserDto.email);
 
@@ -117,7 +117,7 @@ export class UserService {
     return loggedUser;
   }
 
-  async getUserById(id: number): Promise<IDefaultResponse<User>> {
+  async getUserById(id: number): Promise<IDefaultResponse<UserEntity>> {
     // Busca o usuário no banco pelo ID informado
     return await this._get(id);
   }
@@ -173,7 +173,7 @@ export class UserService {
     return formattedResponse;
   }
 
-  refresh(user: User) {
+  refresh(user: UserEntity) {
     // Cria uma instância da classe que gera os tokens
     const tokenGenerator = new generateTokens(this.jwtService, this.refreshTokenConfig);
 
@@ -185,7 +185,7 @@ export class UserService {
     };
   }
 
-  protected async _get(id: number): Promise<IDefaultResponse<User>> {
+  protected async _get(id: number): Promise<IDefaultResponse<UserEntity>> {
     // Busca o usuário no banco pelo ID informado
     const foundedUser = await this.userRepository.findById(id);
 

@@ -7,18 +7,13 @@ import { UserPayload } from 'src/shared/interfaces/user-payload.interface';
 import { UserFromJwt } from 'src/shared/interfaces/user-from-jwt.interface';
 
 @Injectable()
-export class RefreshJwtStrategy extends PassportStrategy(
-  Strategy,
-  'refresh-jwt',
-) {
+export class RefreshJwtStrategy extends PassportStrategy(Strategy, 'refresh-jwt') {
   constructor(
     @Inject(jwtRefreshConfig.KEY)
-    private readonly refreshJwtConfiguration: ConfigType<
-      typeof jwtRefreshConfig
-    >,
+    private readonly refreshJwtConfiguration: ConfigType<typeof jwtRefreshConfig>,
   ) {
     super({
-      jwtFromRequest: ExtractJwt.fromBodyField('refresh_token'),
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
       secretOrKey: refreshJwtConfiguration.secret,
     });

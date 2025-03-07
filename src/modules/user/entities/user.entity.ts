@@ -1,6 +1,6 @@
 import { RoleEntity } from 'src/modules/role/entities/role.entity';
 
-export class User {
+export class UserEntity {
   id: number;
   first_name: string;
   last_name: string;

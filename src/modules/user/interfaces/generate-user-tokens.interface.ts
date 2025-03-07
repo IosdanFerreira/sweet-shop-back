@@ -1,17 +1,17 @@
-import { User } from '../entities/user.entity';
+import { UserEntity } from '../entities/user.entity';
 
 export interface ITokenOutputProps {
   token: string;
   expires_in: number;
 }
 
-export interface tokensOutput {
+export interface TokensOutputInterface {
   auth_tokens: {
     access_token: ITokenOutputProps;
     refresh_token: ITokenOutputProps;
   };
 }
 
-export interface generateTokensInterface {
-  generate(user: User): tokensOutput;
+export interface GenerateTokensInterface {
+  generate(user: UserEntity): TokensOutputInterface;
 }

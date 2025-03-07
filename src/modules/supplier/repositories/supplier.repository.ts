@@ -164,6 +164,8 @@ export class SupplierRepository implements SupplierRepositoryInterface {
       select: {
         id: true,
         name: true,
+        email: true,
+        phone: true,
         name_unaccented: false,
         deleted: false,
         created_at: true,

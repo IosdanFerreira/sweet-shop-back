@@ -26,10 +26,7 @@ import { SharedModule } from 'src/shared/modules/shared-module.module';
     PrismaService,
     {
       provide: 'UserRepositoryInterface',
-      useFactory: (
-        prismaService: PrismaService,
-        removeAccents: RemoveAccentsInterface,
-      ) => {
+      useFactory: (prismaService: PrismaService, removeAccents: RemoveAccentsInterface) => {
         return new UserRepository(prismaService, removeAccents);
       },
       inject: [PrismaService, 'RemoveAccentsInterface'],

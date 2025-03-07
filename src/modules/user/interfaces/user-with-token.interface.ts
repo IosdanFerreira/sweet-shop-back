@@ -1,10 +1,7 @@
-import {
-  ITokenOutputProps,
-  tokensOutput,
-} from './generate-user-tokens.interface';
-import { User } from '../entities/user.entity';
+import { ITokenOutputProps, TokensOutputInterface } from './generate-user-tokens.interface';
+import { UserEntity } from '../entities/user.entity';
 
-export class UserWithToken extends User implements tokensOutput {
+export class UserWithToken extends UserEntity implements TokensOutputInterface {
   auth_tokens: {
     access_token: ITokenOutputProps;
     refresh_token: ITokenOutputProps;

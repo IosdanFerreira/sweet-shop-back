@@ -1,14 +1,11 @@
 import { JwtService } from '@nestjs/jwt';
 import { UserPayload } from 'src/shared/interfaces/user-payload.interface';
-import {
-  generateTokensInterface,
-  tokensOutput,
-} from '../interfaces/generate-user-tokens.interface';
+import { GenerateTokensInterface, TokensOutputInterface } from '../interfaces/generate-user-tokens.interface';
 import { ConfigType } from '@nestjs/config';
 import jwtRefreshConfig from 'src/config/jwt-refresh.config';
-import { User } from '../entities/user.entity';
+import { UserEntity } from '../entities/user.entity';
 
-export class generateTokens implements generateTokensInterface {
+export class generateTokens implements GenerateTokensInterface {
   constructor(
     private readonly jwtService: JwtService,
 
@@ -21,7 +18,7 @@ export class generateTokens implements generateTokensInterface {
    * @param user Dados do usuário que se deseja gerar os tokens.
    * @returns Os tokens de acesso e refresh gerados.
    */
-  generate(user: User): tokensOutput {
+  generate(user: UserEntity): TokensOutputInterface {
     // Cria a payload do token de acesso
     const payload: UserPayload = {
       sub: user.id,
@@ -33,22 +30,16 @@ export class generateTokens implements generateTokensInterface {
     const access_token = this.jwtService.sign(payload);
 
     // Calcula o tempo de expiração do token de acesso
-    const access_token_expires_in =
-      new Date().getTime() + Number(process.env.JWT_EXPIRES_IN_SECONDS) * 1000;
+    const access_token_expires_in = new Date().getTime() + Number(process.env.JWT_EXPIRES_IN_SECONDS) * 1000;
 
     // Gera o token de refresh
-    const refresh_token = this.jwtService.sign(
-      payload,
-      this.refreshTokenConfig,
-    );
+    const refresh_token = this.jwtService.sign(payload, this.refreshTokenConfig);
 
     // Calcula o tempo de expiração do refresh_token
-    const refresh_token_expires_in =
-      new Date().getTime() +
-      Number(process.env.REFRESH_JWT_EXPIRES_IN_SECONDS) * 1000;
+    const refresh_token_expires_in = new Date().getTime() + Number(process.env.REFRESH_JWT_EXPIRES_IN_SECONDS) * 1000;
 
     // Cria o objeto que ser retornado
-    const token: tokensOutput = {
+    const token: TokensOutputInterface = {
       auth_tokens: {
         access_token: {
           token: access_token,

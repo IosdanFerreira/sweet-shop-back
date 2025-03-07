@@ -18,12 +18,17 @@ import { SignInDto } from './dto/signin.dto';
 import { isPublic } from 'src/shared/decorators/is-public.decorator';
 import { RefreshJwtAuthGuard } from 'src/shared/auth/guards/refresh-jwt-auth.guard';
 import { JwtAuthGuard } from 'src/shared/auth/guards/jwt-auth.guard';
+import { ApiBearerAuth, ApiHeader, ApiResponse } from '@nestjs/swagger';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post('signup')
+  @ApiResponse({
+    status: HttpStatus.CONFLICT,
+    description: 'Erro ao tentar criar um novo usuário com um email ja existente',
+  })
   @isPublic()
   @HttpCode(HttpStatus.CREATED)
   signup(@Body() createUserDto: CreateUserDto) {
@@ -31,6 +36,10 @@ export class UserController {
   }
 
   @Post('login')
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Erro ao informar email ou senha inválidos',
+  })
   @isPublic()
   @HttpCode(HttpStatus.OK)
   login(@Body() signInDto: SignInDto) {
@@ -38,6 +47,16 @@ export class UserController {
   }
 
   @Post('refreshToken')
+  @ApiBearerAuth('refresh-token')
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer <refresh_token>',
+    required: true,
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Acesso não autorizado se o refresh token for inválido',
+  })
   @isPublic()
   @HttpCode(HttpStatus.OK)
   @UseGuards(RefreshJwtAuthGuard)
@@ -46,18 +65,33 @@ export class UserController {
   }
 
   @Get(':id')
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Acesso não autorizado' })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Erro ao informar ID de usuário inválido',
+  })
   @UseGuards(JwtAuthGuard)
   findUserByID(@Param('id') id: string) {
     return this.userService.getUserById(+id);
   }
 
   @Put(':id')
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Acesso não autorizado' })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Erro ao informar ID de usuário inválido',
+  })
   @UseGuards(JwtAuthGuard)
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.updateUser(+id, updateUserDto);
   }
 
   @Delete(':id')
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Acesso não autorizado' })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Erro ao informar ID de usuário inválido',
+  })
   @UseGuards(JwtAuthGuard)
   remove(@Param('id') id: string) {
     return this.userService.deleteUser(+id);
