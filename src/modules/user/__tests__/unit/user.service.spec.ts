@@ -1,22 +1,22 @@
-import { GenerateTokensInterface, TokensOutputInterface } from './interfaces/generate-user-tokens.interface';
+import { GenerateTokensInterface, TokensOutputInterface } from '../../interfaces/generate-user-tokens.interface';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { APP_PIPE } from '@nestjs/core';
 import { BadRequestError } from 'src/shared/errors/types/bad-request.error';
 import { ConfigService } from '@nestjs/config';
 import { ConflictError } from 'src/shared/errors/types/conflict.error';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserDto } from '../../dto/create-user.dto';
 import { HashProviderInterface } from 'src/shared/interfaces/hash-provider.interface';
 import { HttpStatus } from '@nestjs/common';
 import { IDefaultResponse } from 'src/shared/interfaces/default-response.interface';
 import { JwtModule } from '@nestjs/jwt';
-import { SignInDto } from './dto/signin.dto';
-import { UserEntity } from './entities/user.entity';
-import { UserRepository } from './repositories/user.repository';
-import { UserRepositoryInterface } from './interfaces/user.repository.interface';
-import { UserService } from './user.service';
-import { UserWithNoTokenDataBuilder } from './testing/user-with-no-token-data-builder';
-import { UserWithToken } from './interfaces/user-with-token.interface';
+import { SignInDto } from '../../dto/signin.dto';
+import { UserEntity } from '../../entities/user.entity';
+import { UserRepository } from '../../repositories/user.repository';
+import { UserRepositoryInterface } from '../../interfaces/user.repository.interface';
+import { UserService } from '../../user.service';
+import { UserWithNoTokenDataBuilder } from '../testing/user-with-no-token-data-builder';
+import { UserWithToken } from '../../interfaces/user-with-token.interface';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 

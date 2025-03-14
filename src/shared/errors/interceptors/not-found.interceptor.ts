@@ -1,23 +1,13 @@
-import {
-  Injectable,
-  NestInterceptor,
-  ExecutionContext,
-  CallHandler,
-  HttpStatus,
-} from '@nestjs/common';
+import { CallHandler, ExecutionContext, HttpStatus, Injectable, NestInterceptor } from '@nestjs/common';
 import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+
 import { IDefaultResponse } from 'src/shared/interfaces/default-response.interface';
 import { NotFoundError } from '../types/not-found.error';
+import { catchError } from 'rxjs/operators';
 
 @Injectable()
-export class NotFoundInterceptor
-  implements NestInterceptor<IDefaultResponse<null>>
-{
-  intercept(
-    context: ExecutionContext,
-    next: CallHandler,
-  ): Observable<IDefaultResponse<null>> {
+export class NotFoundInterceptor implements NestInterceptor<IDefaultResponse<null>> {
+  intercept(context: ExecutionContext, next: CallHandler): Observable<IDefaultResponse<null>> {
     return next.handle().pipe(
       catchError((error) => {
         if (error instanceof NotFoundError) {

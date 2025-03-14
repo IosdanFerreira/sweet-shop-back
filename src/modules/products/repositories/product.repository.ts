@@ -56,6 +56,8 @@ export class ProductRepository implements ProductRepositoryInterface {
           select: {
             id: true,
             name: true,
+            phone: true,
+            email: true,
             created_at: true,
             updated_at: true,
           },
@@ -100,6 +102,8 @@ export class ProductRepository implements ProductRepositoryInterface {
           select: {
             id: true,
             name: true,
+            phone: true,
+            email: true,
             created_at: true,
             updated_at: true,
           },
@@ -177,6 +181,8 @@ export class ProductRepository implements ProductRepositoryInterface {
           select: {
             id: true,
             name: true,
+            phone: true,
+            email: true,
             created_at: true,
             updated_at: true,
           },
@@ -257,6 +263,8 @@ export class ProductRepository implements ProductRepositoryInterface {
           select: {
             id: true,
             name: true,
+            phone: true,
+            email: true,
             created_at: true,
             updated_at: true,
           },
@@ -299,6 +307,8 @@ export class ProductRepository implements ProductRepositoryInterface {
           select: {
             id: true,
             name: true,
+            phone: true,
+            email: true,
             created_at: true,
             updated_at: true,
           },

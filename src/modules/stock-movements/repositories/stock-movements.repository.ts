@@ -1,8 +1,8 @@
+import { CreateStockMovementDto } from '../dto/create-stock-movement.dto';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { StockMovementEntity } from '../entities/stock-movement.entity';
 import { StockMovementsRepositoryInterface } from '../interfaces/stock-movements-repository.interface';
-import { CreateStockMovementDto } from '../dto/create-stock-movement.dto';
-import { Prisma } from '@prisma/client';
 
 export class StockMovementsRepository implements StockMovementsRepositoryInterface {
   constructor(private readonly prisma: PrismaService) {}
@@ -39,6 +39,8 @@ export class StockMovementsRepository implements StockMovementsRepositoryInterfa
             select: {
               id: true,
               name: true,
+              phone: true,
+              email: true,
               created_at: true,
               updated_at: true,
             },
@@ -104,6 +106,8 @@ export class StockMovementsRepository implements StockMovementsRepositoryInterfa
             select: {
               id: true,
               name: true,
+              phone: true,
+              email: true,
               created_at: true,
               updated_at: true,
             },
@@ -180,6 +184,8 @@ export class StockMovementsRepository implements StockMovementsRepositoryInterfa
               select: {
                 id: true,
                 name: true,
+                phone: true,
+                email: true,
                 created_at: true,
                 updated_at: true,
               },
