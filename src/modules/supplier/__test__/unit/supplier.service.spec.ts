@@ -2,17 +2,17 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { APP_PIPE } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
-import { CreateSupplierDto } from '../dto/create-supplier.dto';
+import { CreateSupplierDto } from '../../dto/create-supplier.dto';
 import { HttpStatus } from '@nestjs/common';
 import { NotFoundError } from 'src/shared/errors/types/not-found.error';
 import { PaginationInterface } from 'src/shared/interfaces/pagination.interface';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { RemoveAccents } from 'src/shared/utils/remove-accents';
-import { SupplierEntity } from '../entities/supplier.entity';
-import { SupplierRepository } from '../repositories/supplier.repository';
-import { SupplierRepositoryInterface } from '../interfaces/supplier-repository.interface';
-import { SupplierService } from '../supplier.service';
-import { UpdateSupplierDto } from '../dto/update-supplier.dto';
+import { SupplierEntity } from '../../entities/supplier.entity';
+import { SupplierRepository } from '../../repositories/supplier.repository';
+import { SupplierRepositoryInterface } from '../../interfaces/supplier-repository.interface';
+import { SupplierService } from '../../supplier.service';
+import { UpdateSupplierDto } from '../../dto/update-supplier.dto';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 
