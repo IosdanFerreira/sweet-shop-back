@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { RoleService } from './role.service';
-import { RoleController } from './role.controller';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { RoleRepository } from './repositories/role.repository';
 import { RemoveAccents } from 'src/shared/utils/remove-accents';
+import { RoleController } from './role.controller';
+import { RoleRepository } from './repositories/role.repository';
+import { RoleService } from './role.service';
 import { SharedModule } from 'src/shared/modules/shared-module.module';
 
 @Module({
@@ -14,10 +14,7 @@ import { SharedModule } from 'src/shared/modules/shared-module.module';
     PrismaService,
     {
       provide: 'RoleRepositoryInterface',
-      useFactory: (
-        prismaService: PrismaService,
-        removeAccents: RemoveAccents,
-      ) => {
+      useFactory: (prismaService: PrismaService, removeAccents: RemoveAccents) => {
         return new RoleRepository(prismaService, removeAccents);
       },
       inject: [PrismaService],
