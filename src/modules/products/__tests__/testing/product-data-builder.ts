@@ -3,7 +3,7 @@ import { ProductEntity } from '../../entities/product.entity';
 /**
  * Class that helps to create a {@link ProductEntity} with default values.
  */
-export function ProductDataBuilder(product?: ProductEntity): ProductEntity {
+export function ProductDataBuilder(product?: Partial<ProductEntity>): ProductEntity {
   return {
     /**
      * The product id. If not provided, defaults to 1.

@@ -14,15 +14,29 @@ export class ReportService {
   async getSalesReport() {
     const salesByMonth = await this.reportRepository.findGroupSales();
 
+    if (!salesByMonth || salesByMonth.length === 0) {
+      return {
+        status_code: HttpStatus.NOT_FOUND,
+        success: false,
+        error_type: null,
+        errors: null,
+        message: 'Relatório de vendas não encontrado',
+        data: [],
+        pagination: null,
+      };
+    }
+
     const groupedSales = salesByMonth.reduce(
       (acc, sale) => {
-        const month = sale.created_at.toISOString().slice(5, 7) + '/' + sale.created_at.getFullYear();
+        const month = String(sale.created_at.getUTCMonth() + 1).padStart(2, '0');
+        const year = sale.created_at.getUTCFullYear();
+        const key = `${month}/${year}`;
 
-        if (!acc[month]) {
-          acc[month] = 0;
+        if (!acc[key]) {
+          acc[key] = 0;
         }
 
-        acc[month] += sale._count.id;
+        acc[key] += sale._count.id;
 
         return acc;
       },
