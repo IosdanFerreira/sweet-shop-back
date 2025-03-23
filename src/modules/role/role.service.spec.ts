@@ -1,13 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { APP_PIPE } from '@nestjs/core';
-import { BadRequestError } from 'src/shared/errors/types/bad-request.error';
 import { ConfigService } from '@nestjs/config';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { HttpStatus } from '@nestjs/common';
 import { IDefaultResponse } from 'src/shared/interfaces/default-response.interface';
 import { NotFoundError } from 'src/shared/errors/types/not-found.error';
-import { PaginationInterface } from 'src/shared/interfaces/pagination.interface';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { RemoveAccents } from 'src/shared/utils/remove-accents';
 import { RoleEntity } from './entities/role.entity';

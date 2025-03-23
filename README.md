@@ -2,7 +2,7 @@
 
 ## Descrição
 
-Este projeto é uma aplicação backend construída com NestJS, projetada para gerenciar dados relacionados à docerias. Ele fornece funcionalidades para gerenciamento de usuários, permissões, produtos, categorias, fornecedores, movimentações de estoque, vendas, relatórios e fluxo de caixa. Utiliza o Prisma como ORM para interagir com o banco de dados.
+Este projeto é uma aplicação backend construída com NestJS, projetada para gerenciar dados relacionados à docerias. Ele fornece funcionalidades para gerenciamento de usuários, permissões, produtos, categorias, fornecedores, movimentações de estoque, vendas, relatórios e fluxo de caixa.
 
 ## Funcionalidades
 
@@ -37,6 +37,7 @@ Este projeto é uma aplicação backend construída com NestJS, projetada para g
 ## Tecnologias Utilizadas
 
 - [Node.js](https://nodejs.org/)
+- [Typescript](https://www.typescriptlang.org/)
 - [NestJS](https://nestjs.com/)
 - [Prisma](https://www.prisma.io/)
 - [PostgreSQL](https://www.postgresql.org/)
@@ -65,24 +66,27 @@ Este projeto é uma aplicação backend construída com NestJS, projetada para g
     cd healthcare-back
     ```
 
-2.  **Install dependencies:**
+2.  **Configurar variáveis de ambiente:**
 
-    ```bash
-    npm install # Or yarn install
-    ```
-
-3.  **Set up environment variables:**
-
-    - Create a `.env` file in the root directory.
-    - Add the following variables, adjusting the values to your local setup:
+    - Crie um arquivo `.env` na pasta root do repositório.
+    - Adicione as seguintes variáveis, ajustando os valores conforme sua configuração local:
 
     ```env
-    DATABASE_URL="postgresql://user:password@host:port/database?schema=public"
-    JWT_SECRET="your-secret-key"
-    JWT_EXPIRES_IN_SECONDS=3600
-    REFRESH_JWT_SECRET="your-refresh-secret-key"
-    REFRESH_JWT_EXPIRES_IN_SECONDS=86400
+    ENV=development
     APP_PORT=3001
+    DATABASE_URL="postgresql://postgres:healthcare-back-secret@db:5432/healthcare-back?schema=public&timezone=America/Sao_Paulo"
+    JWT_SECRET="jwt_secret"
+    JWT_EXPIRES_IN_SECONDS=3600
+    JWT_EXPIRES_IN_LITERAL_STRING_VALUE='1h'
+    REFRESH_JWT_SECRET="refresh_jwt_secret"
+    REFRESH_JWT_EXPIRES_IN_SECONDS=604800
+    REFRESH_JWT_EXPIRES_IN_LITERAL_STRING_VALUE='7d'
+    ```
+
+3.  **Conceda as permissões:**
+
+    ```bash
+    chmod +x .docker/entrypoint.sh
     ```
 
 4.  **Set up the database:**
