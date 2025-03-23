@@ -2,7 +2,7 @@ services:
   app:
     build: .
     entrypoint: /home/node/app/.docker/entrypoint.sh
-    container_name: healthcare-back-app
+    container_name: sweet-shop-back-app
     ports:
       - '3001:3001' # Expose app port
       - '5555:5555' # Expose prisma studio port
@@ -12,7 +12,7 @@ services:
       - db
   db:
     build: .docker/postgres
-    container_name: healthcare-back-db
+    container_name: sweet-shop-back-db
     restart: always
     tty: true
     ports:
@@ -22,5 +22,5 @@ services:
     environment:
       - TZ=America/Sao_Paulo
       - PGTZ=America/Sao_Paulo
-      - POSTGRES_PASSWORD=healthcare-back-secret
-      - POSTGRES_DB=healthcare-back
+      - POSTGRES_PASSWORD=sweet-shop-back-secret
+      - POSTGRES_DB=sweet-shop-back

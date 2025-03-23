@@ -1,4 +1,4 @@
-# Doceria - backend- demo
+# Sweet Shop - backend
 
 ## Descrição
 
@@ -89,72 +89,63 @@ Este projeto é uma aplicação backend construída com NestJS, projetada para g
     chmod +x .docker/entrypoint.sh
     ```
 
-4.  **Set up the database:**
+4.  **Rode os comando docker:**
 
-    - Create a PostgreSQL database with the name specified in your `DATABASE_URL`.
-    - Run the Prisma migrations to create the database schema:
-
-    ```bash
-    npx prisma migrate dev
-    ```
-
-5.  **Seed the database (optional):**
+    Construa a build
 
     ```bash
-    npx prisma db seed
+    docker compose build
+
+    #Ou caso queira limpar o cache
+
+    docker compose build --no-cache
     ```
 
-    This will create initial roles (Administrator, Seller) and two default users, one with Administrator role and another with Seller role. The default password for both users is `Teste12!@`.
-
-6.  **Run the application:**
+    suba o container
 
     ```bash
-    npm run start:dev # Or yarn start:dev
+    docker compose up
     ```
 
-    This will start the application in development mode with hot-reloading.
+## Guia de uso
 
-## Usage Guide
+1.  **Acesse a aplicação:**
 
-1.  **Access the application:**
+    Abra seu navegador e acesse `http://localhost:3001`.
 
-    Open your browser and navigate to `http://localhost:3001`.
+2.  **Acesse a documentação do Swagger:**
 
-2.  **Access the Swagger documentation:**
+    Navegue até `http://localhost:3001/api` para interagir com a documentação da API.
 
-    Navigate to `http://localhost:3001/api` to view the interactive API documentation.
+3.  **Autenticação:**
 
-3.  **Authentication:**
+    - Utilize o endpoint `/user/login` para autenticar-se e obter um access token e um refresh token. Forneça as credenciais (e-mail e senha) de um usuário previamente cadastrado. Os usuários padrão gerados pelo comando de seed podem ser utilizados para testes iniciais.
+    - O access token deve ser incluído no cabeçalho `Authorization` das requisições subsequentes a rotas protegidas, no formato `Bearer <token>`.
+    - Para renovar o access token, utilize o endpoint `/user/refreshToken` enviando um refresh token válido.
 
-    - Use the `/user/login` endpoint to obtain an access token and a refresh token. Provide the email and password for an existing user. The default users created by the seed command can be used for initial testing.
-    - Include the access token in the `Authorization` header of subsequent requests to protected endpoints.
-    - Use the `/user/refreshToken` endpoint with a valid refresh token to obtain a new access token.
+## Documentação da API
 
-## API Documentation
+A documentação da API está disponível via Swagger no endpoint /api. Os principais endpoints incluem:
 
-The API documentation is available via Swagger at `/api`. Key endpoints include:
+- **`POST /user/signup`**: Registra um novo usuário.
 
-- **`POST /user/signup`**: Register a new user.
-
-  - Request body: `CreateUserDto`
-  - Example:
+  - Exemplo:
 
     ```json
     {
       "first_name": "John",
       "last_name": "Doe",
       "email": "john.doe@example.com",
-      "password": "Password123!",
+      "password": "Password123!@",
       "phone": "(11) 99999-9999",
       "privacy_consent": true,
       "role_id": 1
     }
     ```
 
-- **`POST /user/login`**: Log in an existing user.
+- **`POST /user/login`**: Realiza o login de um usuário existente.
 
-  - Request body: `SignInDto`
-  - Example:
+  - Exemplo:
 
     ```json
     {
@@ -163,12 +154,11 @@ The API documentation is available via Swagger at `/api`. Key endpoints include:
     }
     ```
 
-- **`GET /user/:id`**: Get user by ID. Requires JWT Authentication.
+- **`GET /user/:id`**: Busca um usuário pelo ID. Requer autenticação JWT.
 
-- **`POST /roles`**: Create a new role. Requires JWT Authentication.
+- **`POST /roles`**: Cria uma nova permissão(role). Requer autenticação JWT.
 
-  - Request body: `CreateRoleDto`
-  - Example:
+  - Exemplo:
 
     ```json
     {
@@ -176,14 +166,13 @@ The API documentation is available via Swagger at `/api`. Key endpoints include:
     }
     ```
 
-- **`GET /categories`**: Get a list of categories. Requires JWT Authentication. Supports pagination and search queries.
+- **`GET /categories`**: Retorna a lista de categorias. Requer autenticação JWT. Suporta paginação e buscas com filtros.
 
-  - Example: `GET /categories?page=1&limit=10&order_by=asc&search=Cereais`
+  - Exemplo: `GET /categories?page=1&limit=10&order_by=asc&search=Cereais`
 
-- **`POST /products`**: Create a new product. Requires JWT Authentication.
+- **`POST /products`**: Cadastra um novo produto. Requer autenticação JWT.
 
-  - Request body: `CreateProductDto`
-  - Example:
+  - Exemplo:
 
     ```json
     {
@@ -197,10 +186,9 @@ The API documentation is available via Swagger at `/api`. Key endpoints include:
     }
     ```
 
-- **`POST /sales`**: Registers a new sale. Requires JWT Authentication.
+- **`POST /sales`**: Registra uma nova venda. Requer autenticação JWT.
 
-  - Request body:
-  - Example:
+  - Exemplo:
 
     ```json
     {
@@ -217,12 +205,13 @@ The API documentation is available via Swagger at `/api`. Key endpoints include:
     }
     ```
 
-- **`GET /cash-flow`**: Retrieves cash flow based on date ranges. Requires JWT Authentication.
-  - Example: `/cash-flow?start_date=01/01/2024&end_date=31/01/2024`
-- **`POST /stock-movements/increase`**: Registers an increase in stock for a product. Requires JWT Authentication.
+- **`GET /cash-flow`**: Consulta o fluxo de caixa com base em intervalo de datas. Requer autenticação JWT.
 
-  - Request body: `CreateStockMovementDto`
-  - Example:
+  - Exemplo: `/cash-flow?start_date=01/01/2024&end_date=31/01/2024`
+
+- **`POST /stock-movements/increase`**: Registra um aumento de estoque para um produto. Requer autenticação JWT.
+
+  - Exemplo:
 
     ```json
     {
@@ -230,19 +219,3 @@ The API documentation is available via Swagger at `/api`. Key endpoints include:
       "quantity": 50
     }
     ```
-
-## Contributing Guidelines
-
-1.  Fork the repository.
-2.  Create a new branch for your feature or bug fix.
-3.  Make your changes and write tests.
-4.  Ensure all tests pass.
-5.  Submit a pull request.
-
-## License Information
-
-This project has no license specified. All rights are reserved.
-
-## Contact/Support Information
-
-For questions or support, please contact [Iosdan Ferreira](mailto:iosdan.silva@gmail.com).

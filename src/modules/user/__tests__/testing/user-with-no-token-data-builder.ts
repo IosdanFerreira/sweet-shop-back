@@ -1,5 +1,5 @@
-import { CreateUserDto } from '../dto/create-user.dto';
-import { UserEntity } from '../entities/user.entity';
+import { CreateUserDto } from '../../dto/create-user.dto';
+import { UserEntity } from '../../entities/user.entity';
 
 export function UserWithNoTokenDataBuilder(userData?: CreateUserDto): UserEntity {
   return {
