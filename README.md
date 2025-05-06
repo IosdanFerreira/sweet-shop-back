@@ -62,8 +62,8 @@ Aplicação backend construída com NestJS, projetada para gerenciar dados relac
 1.  **Clone o repositório:**
 
     ```bash
-    git clone https://github.com/IosdanFerreira/healthcare-back.git
-    cd healthcare-back
+    git clone https://github.com/IosdanFerreira/sweet-shop-back.git
+    cd sweet-shop-back
     ```
 
 2.  **Configurar variáveis de ambiente:**
@@ -74,7 +74,7 @@ Aplicação backend construída com NestJS, projetada para gerenciar dados relac
     ```env
     ENV=development
     APP_PORT=3001
-    DATABASE_URL="postgresql://postgres:healthcare-back-secret@db:5432/healthcare-back?schema=public&timezone=America/Sao_Paulo"
+    DATABASE_URL="postgresql://postgres:sweet-shop-back-secret@db:5432/sweet-shop-back?schema=public&timezone=America/Sao_Paulo"
     JWT_SECRET="jwt_secret"
     JWT_EXPIRES_IN_SECONDS=3600
     JWT_EXPIRES_IN_LITERAL_STRING_VALUE='1h'
