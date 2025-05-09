@@ -15,8 +15,10 @@ async function bootstrap() {
 
   // Configura o Swagger
   const config = new DocumentBuilder()
-    .setTitle('Cats example')
-    .setDescription('The cats API description')
+    .setTitle('Sweet Shop - backend')
+    .setDescription(
+      'Aplicação backend construída com NestJS, projetada para gerenciar dados relacionados à docerias. Ele fornece funcionalidades para gerenciamento de usuários, permissões, produtos, categorias, fornecedores, movimentações de estoque, vendas, relatórios e fluxo de caixa.',
+    )
     .setVersion('1.0')
     .addTag('cats')
     .build();
