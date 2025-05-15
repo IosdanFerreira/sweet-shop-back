@@ -1,4 +1,4 @@
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { CategoryRepositoryInterface } from '../interfaces/category-repository.interface';
 import { RemoveAccentsInterface } from 'src/shared/interfaces/remove-accents.interface';
 import { CreateCategoryDto } from '../dto/create-category.dto';
@@ -11,7 +11,7 @@ export class CategoryRepository implements CategoryRepositoryInterface {
 
     @Inject('RemoveAccentsInterface')
     private readonly removeAccents: RemoveAccentsInterface,
-  ) {}
+  ) { }
 
   async insert(createDto: CreateCategoryDto): Promise<CategoryEntity> {
     return await this.prisma.category.create({

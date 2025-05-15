@@ -5,7 +5,7 @@ import { CategoryModule } from '../category/category.module';
 import { ConfigService } from '@nestjs/config';
 import { HttpStatus } from '@nestjs/common';
 import { IDefaultResponse } from 'src/shared/interfaces/default-response.interface';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { ProductDataBuilder } from '../products/__tests__/testing/product-data-builder';
 import { ProductEntity } from '../products/entities/product.entity';
 import { ProductRepository } from '../products/repositories/product.repository';

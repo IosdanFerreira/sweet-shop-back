@@ -1,4 +1,4 @@
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { SalesRepositoryInterface } from '../interfaces/sales-repository.interface';
 import { CreateSaleDto } from '../dto/create-sale.dto';
 import { SaleEntity } from '../entities/sale.entity';
@@ -15,7 +15,7 @@ export class SalesRepository implements SalesRepositoryInterface {
 
     @Inject('RemoveAccentsInterface')
     private readonly removeAccents: RemoveAccentsInterface,
-  ) {}
+  ) { }
 
   /**
    * Registra uma nova compra

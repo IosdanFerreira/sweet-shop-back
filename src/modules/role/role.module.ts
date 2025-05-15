@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { RemoveAccents } from 'src/shared/utils/remove-accents';
 import { RoleController } from './role.controller';
 import { RoleRepository } from './repositories/role.repository';
@@ -22,4 +22,4 @@ import { SharedModule } from 'src/shared/modules/shared-module.module';
   ],
   exports: [RoleService],
 })
-export class RoleModule {}
+export class RoleModule { }

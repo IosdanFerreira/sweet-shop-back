@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { RemoveAccentsInterface } from 'src/shared/interfaces/remove-accents.interface';
 import { SharedModule } from 'src/shared/modules/shared-module.module';
 import { SupplierController } from './supplier.controller';
@@ -22,4 +22,4 @@ import { SupplierService } from './supplier.service';
   ],
   exports: [SupplierService],
 })
-export class SupplierModule {}
+export class SupplierModule { }

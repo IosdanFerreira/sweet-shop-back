@@ -3,7 +3,7 @@ import { StockMovementsService } from './stock-movements.service';
 import { StockMovementsController } from './stock-movements.controller';
 import { SharedModule } from 'src/shared/modules/shared-module.module';
 import { StockMovementsRepository } from './repositories/stock-movements.repository';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { ProductsModule } from '../products/products.module';
 
 @Module({
@@ -22,4 +22,4 @@ import { ProductsModule } from '../products/products.module';
   ],
   exports: [StockMovementsService],
 })
-export class StockMovementsModule {}
+export class StockMovementsModule { }

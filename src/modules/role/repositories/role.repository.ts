@@ -1,4 +1,4 @@
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { RoleEntity } from '../entities/role.entity';
 import { RoleRepositoryInterface } from '../interfaces/role-repository.interface';
 import { CreateRoleDto } from '../dto/create-role.dto';
@@ -9,7 +9,7 @@ export class RoleRepository implements RoleRepositoryInterface {
   constructor(
     private readonly prisma: PrismaService,
     private readonly removeAccents: RemoveAccentsInterface,
-  ) {}
+  ) { }
 
   async insert(createRoleDto: CreateRoleDto): Promise<RoleEntity> {
     const createdRole = await this.prisma.role.create({

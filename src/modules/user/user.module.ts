@@ -2,12 +2,11 @@ import { Module } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserController } from './user.controller';
 import { UserRepository } from './repositories/user.repository';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { JwtModule } from '@nestjs/jwt';
-import jwtConfig from 'src/config/jwt.config';
+import jwtConfig from 'src/shared/config/jwt.config';
 import { ConfigModule } from '@nestjs/config';
-import jwtRefreshConfig from 'src/config/jwt-refresh.config';
-import { LocalStrategy } from 'src/shared/auth/strategies/local.strategy';
+import jwtRefreshConfig from 'src/shared/config/jwt-refresh.config';
 import { JwtStrategy } from 'src/shared/auth/strategies/jwt.strategy';
 import { RefreshJwtStrategy } from 'src/shared/auth/strategies/jwt-refresh.strategy';
 import { RemoveAccentsInterface } from 'src/shared/interfaces/remove-accents.interface';
@@ -31,10 +30,9 @@ import { SharedModule } from 'src/shared/modules/shared-module.module';
       },
       inject: [PrismaService, 'RemoveAccentsInterface'],
     },
-    LocalStrategy,
     JwtStrategy,
     RefreshJwtStrategy,
   ],
   exports: [UserService],
 })
-export class UserModule {}
+export class UserModule { }

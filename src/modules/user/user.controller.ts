@@ -10,19 +10,22 @@ import {
   HttpStatus,
   UseGuards,
   Request,
+  Header,
+  Res,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { SignInDto } from './dto/signin.dto';
 import { isPublic } from 'src/shared/decorators/is-public.decorator';
-import { RefreshJwtAuthGuard } from 'src/shared/auth/guards/refresh-jwt-auth.guard';
 import { JwtAuthGuard } from 'src/shared/auth/guards/jwt-auth.guard';
-import { ApiBearerAuth, ApiHeader, ApiResponse } from '@nestjs/swagger';
+import { ApiResponse } from '@nestjs/swagger';
+import { Response } from 'express';
+import { RefreshJwtAuthGuard } from 'src/shared/auth/guards/refresh-jwt-auth.guard';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
 
   @Post('signup')
   @ApiResponse({
@@ -36,32 +39,31 @@ export class UserController {
   }
 
   @Post('login')
+  @Header('Access-Control-Allow-Credentials', 'true')
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
     description: 'Erro ao informar email ou senha inválidos',
   })
   @isPublic()
   @HttpCode(HttpStatus.OK)
-  login(@Body() signInDto: SignInDto) {
-    return this.userService.signin(signInDto);
+  login(@Body() signInDto: SignInDto, @Res({ passthrough: true }) response: Response,) {
+    return this.userService.signin(signInDto, response);
   }
 
-  @Post('refreshToken')
-  @ApiBearerAuth('refresh-token')
-  @ApiHeader({
-    name: 'Authorization',
-    description: 'Bearer <refresh_token>',
-    required: true,
-  })
+  @Post('refresh')
+  @isPublic()
+  @UseGuards(RefreshJwtAuthGuard)
+  @Header('Access-Control-Allow-Credentials', 'true')
+  @HttpCode(HttpStatus.OK)
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
     description: 'Acesso não autorizado se o refresh token for inválido',
   })
-  @isPublic()
-  @HttpCode(HttpStatus.OK)
-  @UseGuards(RefreshJwtAuthGuard)
-  async refreshToken(@Request() req: any) {
-    return this.userService.refresh(req.user);
+  async refreshToken(
+    @Request() req: any,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    return this.userService.refresh(req.user, res);
   }
 
   @Get(':id')

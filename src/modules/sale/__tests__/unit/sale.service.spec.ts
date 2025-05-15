@@ -6,7 +6,7 @@ import { CreateSaleDto } from '../../dto/create-sale.dto';
 import { HttpStatus } from '@nestjs/common';
 import { IDefaultResponse } from 'src/shared/interfaces/default-response.interface';
 import { PaginationInterface } from 'src/shared/interfaces/pagination.interface';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { RemoveAccents } from 'src/shared/utils/remove-accents';
 import { SaleDataBuilder } from '../testing/sale-data-builder';
 import { SaleEntity } from '../../entities/sale.entity';

@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CategoryController } from './category.controller';
 import { CategoryRepository } from './repositories/category.repository';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { RemoveAccentsInterface } from 'src/shared/interfaces/remove-accents.interface';
 import { SharedModule } from 'src/shared/modules/shared-module.module';
 
@@ -22,4 +22,4 @@ import { SharedModule } from 'src/shared/modules/shared-module.module';
   ],
   exports: [CategoryService],
 })
-export class CategoryModule {}
+export class CategoryModule { }

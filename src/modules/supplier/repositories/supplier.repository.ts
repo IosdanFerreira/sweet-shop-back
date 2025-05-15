@@ -1,4 +1,4 @@
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { SupplierEntity } from '../entities/supplier.entity';
 import { SupplierRepositoryInterface } from '../interfaces/supplier-repository.interface';
 import { Inject } from '@nestjs/common';
@@ -12,7 +12,7 @@ export class SupplierRepository implements SupplierRepositoryInterface {
 
     @Inject('RemoveAccentsInterface')
     private readonly removeAccents: RemoveAccentsInterface,
-  ) {}
+  ) { }
 
   async insert(createDto: CreateSupplierDto): Promise<SupplierEntity> {
     return await this.prisma.supplier.create({

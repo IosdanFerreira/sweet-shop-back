@@ -8,6 +8,7 @@ import { DatabaseInterceptor } from './shared/errors/interceptors/database.inter
 import { NestFactory } from '@nestjs/core';
 import { NotFoundInterceptor } from './shared/errors/interceptors/not-found.interceptor';
 import { ValidationPipe } from '@nestjs/common';
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   // Cria uma instância do Nest
@@ -33,13 +34,13 @@ async function bootstrap() {
     new DatabaseInterceptor(),
   );
 
+  app.use(cookieParser());
   app.enableCors({
-  origin: [
-    "http://localhost:5173",
-    "http://localhost:3000",
-  ],
-  credentials: true,
-});
+    origin: [
+      "http://localhost:3001",
+    ],
+    credentials: true,
+  });
 
   // Intercepta erros de validação de dados para exibi-los de forma customizada
   app.useGlobalPipes(

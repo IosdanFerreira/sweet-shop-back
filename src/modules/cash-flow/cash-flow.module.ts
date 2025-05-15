@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { CashFlowService } from './cash-flow.service';
 import { CashFlowController } from './cash-flow.controller';
 import { SharedModule } from 'src/shared/modules/shared-module.module';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { CashFlowRepository } from './repositories/cash-flow.repository';
 
 @Module({
@@ -21,4 +21,4 @@ import { CashFlowRepository } from './repositories/cash-flow.repository';
   ],
   exports: [CashFlowService],
 })
-export class CashFlowModule {}
+export class CashFlowModule { }

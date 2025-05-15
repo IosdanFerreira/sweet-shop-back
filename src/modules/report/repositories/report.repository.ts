@@ -1,9 +1,9 @@
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { ReportRepositoryInterface } from '../interfaces/report-repository.interface';
 import { Prisma } from '@prisma/client';
 
 export class ReportRepository implements ReportRepositoryInterface {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
   async findSellingTopProducts(): Promise<
     (Prisma.PickEnumerable<Prisma.SaleItemGroupByOutputType, 'product_id'[]> & {
       _sum: {

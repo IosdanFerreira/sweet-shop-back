@@ -1,6 +1,6 @@
 import { ProductRepositoryInterface } from '../interfaces/product-repository.interface';
 import { ProductEntity } from '../entities/product.entity';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { CreateProductDto } from '../dto/create-product.dto';
 import { RemoveAccentsInterface } from 'src/shared/interfaces/remove-accents.interface';
 import { Inject } from '@nestjs/common';
@@ -12,7 +12,7 @@ export class ProductRepository implements ProductRepositoryInterface {
 
     @Inject('RemoveAccentsInterface')
     private readonly removeAccents: RemoveAccentsInterface,
-  ) {}
+  ) { }
 
   async insert(createDto: CreateProductDto): Promise<ProductEntity> {
     const { category_id, supplier_id, ...rest } = createDto;

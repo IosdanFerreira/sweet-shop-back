@@ -6,7 +6,7 @@ import { CreateRoleDto } from './dto/create-role.dto';
 import { HttpStatus } from '@nestjs/common';
 import { IDefaultResponse } from 'src/shared/interfaces/default-response.interface';
 import { NotFoundError } from 'src/shared/errors/types/not-found.error';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { RemoveAccents } from 'src/shared/utils/remove-accents';
 import { RoleEntity } from './entities/role.entity';
 import { RoleRepository } from './repositories/role.repository';

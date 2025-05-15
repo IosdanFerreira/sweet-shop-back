@@ -2,7 +2,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UserPayload } from 'src/shared/interfaces/user-payload.interface';
 import { GenerateTokensInterface, TokensOutputInterface } from '../interfaces/generate-user-tokens.interface';
 import { ConfigType } from '@nestjs/config';
-import jwtRefreshConfig from 'src/config/jwt-refresh.config';
+import jwtRefreshConfig from 'src/shared/config/jwt-refresh.config';
 import { UserEntity } from '../entities/user.entity';
 
 export class generateTokens implements GenerateTokensInterface {
@@ -10,7 +10,7 @@ export class generateTokens implements GenerateTokensInterface {
     private readonly jwtService: JwtService,
 
     private refreshTokenConfig: ConfigType<typeof jwtRefreshConfig>,
-  ) {}
+  ) { }
 
   /**
    * Gera os tokens de acesso e refresh_token do usuário.

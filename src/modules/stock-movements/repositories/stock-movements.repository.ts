@@ -1,11 +1,11 @@
 import { CreateStockMovementDto } from '../dto/create-stock-movement.dto';
 import { Prisma } from '@prisma/client';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { StockMovementEntity } from '../entities/stock-movement.entity';
 import { StockMovementsRepositoryInterface } from '../interfaces/stock-movements-repository.interface';
 
 export class StockMovementsRepository implements StockMovementsRepositoryInterface {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async registerEntry(stockMovementDTO: CreateStockMovementDto): Promise<StockMovementEntity> {
     return await this.prisma.$transaction(async (prisma) => {

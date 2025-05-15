@@ -7,7 +7,7 @@ import { HttpStatus } from '@nestjs/common';
 import { IDefaultResponse } from 'src/shared/interfaces/default-response.interface';
 import { NotFoundError } from 'src/shared/errors/types/not-found.error';
 import { PaginationInterface } from 'src/shared/interfaces/pagination.interface';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { ProductDataBuilder } from '../../../products/__tests__/testing/product-data-builder';
 import { ProductEntity } from '../../../products/entities/product.entity';
 import { ProductsModule } from '../../../products/products.module';

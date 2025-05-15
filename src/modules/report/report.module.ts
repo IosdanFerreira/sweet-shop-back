@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ReportService } from './report.service';
 import { ReportController } from './report.controller';
 import { SharedModule } from 'src/shared/modules/shared-module.module';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { ReportRepository } from './repositories/report.repository';
 import { ProductsModule } from '../products/products.module';
 import { SupplierModule } from '../supplier/supplier.module';
@@ -21,4 +21,4 @@ import { SupplierModule } from '../supplier/supplier.module';
   ],
   exports: [ReportService],
 })
-export class ReportModule {}
+export class ReportModule { }

@@ -1,8 +1,8 @@
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { CashFlowRepositoryInterface } from '../interfaces/cash-flow-repository.interface';
 
 export class CashFlowRepository implements CashFlowRepositoryInterface {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async findAll(conditionalFilters: any): Promise<any> {
     return this.prisma.$transaction(async (prisma) => {

@@ -6,7 +6,7 @@ import { CreateSupplierDto } from '../../dto/create-supplier.dto';
 import { HttpStatus } from '@nestjs/common';
 import { NotFoundError } from 'src/shared/errors/types/not-found.error';
 import { PaginationInterface } from 'src/shared/interfaces/pagination.interface';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { RemoveAccents } from 'src/shared/utils/remove-accents';
 import { SupplierEntity } from '../../entities/supplier.entity';
 import { SupplierRepository } from '../../repositories/supplier.repository';

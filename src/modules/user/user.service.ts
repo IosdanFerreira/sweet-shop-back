@@ -1,8 +1,8 @@
-import { HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable, Res } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { HashProviderInterface } from 'src/shared/interfaces/hash-provider.interface';
 import { JwtService } from '@nestjs/jwt';
-import refreshJwtConfig from '../../config/jwt-refresh.config';
+import refreshJwtConfig from '../../shared/config/jwt-refresh.config';
 import { ConfigType } from '@nestjs/config';
 import { UserWithToken } from './interfaces/user-with-token.interface';
 import { SignInDto } from './dto/signin.dto';
@@ -14,6 +14,7 @@ import { NotFoundError } from 'src/shared/errors/types/not-found.error';
 import { IDefaultResponse } from 'src/shared/interfaces/default-response.interface';
 import { UserRepositoryInterface } from './interfaces/user.repository.interface';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { Response } from 'express';
 
 @Injectable()
 export class UserService {
@@ -28,7 +29,7 @@ export class UserService {
 
     @Inject(refreshJwtConfig.KEY)
     private refreshTokenConfig: ConfigType<typeof refreshJwtConfig>,
-  ) {}
+  ) { }
 
   async createUser(createUserDto: CreateUserDto): Promise<IDefaultResponse<UserEntity>> {
     // Checa se o email do usuário ja existe
@@ -68,7 +69,7 @@ export class UserService {
     return formattedNewUser;
   }
 
-  async signin(signinDto: SignInDto): Promise<IDefaultResponse<UserWithToken>> {
+  async signin(signinDto: SignInDto, @Res({ passthrough: true }) response: Response): Promise<IDefaultResponse<UserEntity>> {
     // Checa se o email do usuário existe
     const userAlreadyExists = await this.userRepository.findByEmail(signinDto.email);
 
@@ -103,14 +104,30 @@ export class UserService {
     const tokenGenerator = new generateTokens(this.jwtService, this.refreshTokenConfig);
     const tokens = tokenGenerator.generate(userAlreadyExists);
 
+    // Configura os cookies seguros
+    response.cookie('accessToken', tokens.auth_tokens.access_token.token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 15 * 60 * 1000
+    });
+
+    response.cookie('refreshToken', tokens.auth_tokens.refresh_token.token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: '/user/refresh'
+    });
+
     // Formata a resposta no formato padrão
-    const loggedUser: IDefaultResponse<UserWithToken> = {
+    const loggedUser: IDefaultResponse<UserEntity> = {
       status_code: HttpStatus.OK,
       success: true,
       error_type: null,
       errors: null,
       message: 'Usuário logado com sucesso',
-      data: { ...userAlreadyExists, ...tokens },
+      data: { ...userAlreadyExists, },
       pagination: null,
     };
 
@@ -173,15 +190,23 @@ export class UserService {
     return formattedResponse;
   }
 
-  refresh(user: UserEntity) {
+  async refresh(user: UserEntity, res: Response) {
     // Cria uma instância da classe que gera os tokens
     const tokenGenerator = new generateTokens(this.jwtService, this.refreshTokenConfig);
 
     // Chama o método generate da classe para gerar os tokens assinados com os dados do usuário
     const tokens = tokenGenerator.generate(user);
 
+    // Define o novo access token no cookie
+    res.cookie('accessToken', tokens.auth_tokens.access_token.token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 15 * 60 * 1000,
+    });
+
     return {
-      access_token: tokens.auth_tokens.access_token,
+      message: 'Token renovado com sucesso',
     };
   }
 

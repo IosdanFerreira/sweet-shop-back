@@ -1,4 +1,4 @@
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { UserRepositoryInterface } from '../interfaces/user.repository.interface';
@@ -9,7 +9,7 @@ export class UserRepository implements UserRepositoryInterface {
   constructor(
     private readonly prisma: PrismaService,
     private readonly removeAccents: RemoveAccentsInterface,
-  ) {}
+  ) { }
 
   async insert(createDto: CreateUserDto): Promise<UserEntity> {
     const newUser = await this.prisma.user.create({
@@ -95,8 +95,8 @@ export class UserRepository implements UserRepositoryInterface {
       },
       data: {
         ...updateDto,
-        first_name_unaccented: this.removeAccents.execute(updateDto.first_name),
-        last_name_unaccented: this.removeAccents.execute(updateDto.last_name),
+        first_name_unaccented: updateDto.first_name ? this.removeAccents.execute(updateDto.first_name) : undefined,
+        last_name_unaccented: updateDto.last_name ? this.removeAccents.execute(updateDto.last_name) : undefined,
       },
       select: {
         id: true,
