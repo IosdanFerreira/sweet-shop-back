@@ -12,6 +12,6 @@ export const handleDatabaseErrors = (e: PrismaClientError): Error => {
       return new UniqueConstraintError(e);
 
     default:
-      return new DatabaseError([{ property: '', message: e.message }]);
+      return new DatabaseError('', [{ property: '', message: e.message }]);
   }
 };

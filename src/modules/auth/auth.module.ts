@@ -1,16 +1,16 @@
 import { Module } from '@nestjs/common';
-import { UserService } from './user.service';
-import { UserController } from './user.controller';
-import { UserRepository } from './repositories/user.repository';
-import { PrismaService } from 'src/modules/prisma/prisma.service';
+import { AuthController } from './auth.controller';
+import { AuthService } from './auth.service';
+import { PrismaService } from '../prisma/prisma.service';
+import { UserRepository } from '../user/repositories/user.repository';
+import { RemoveAccentsInterface } from 'src/shared/interfaces/remove-accents.interface';
+import { JwtStrategy } from 'src/shared/auth/strategies/jwt.strategy';
+import { RefreshJwtStrategy } from 'src/shared/auth/strategies/jwt-refresh.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import jwtConfig from 'src/shared/config/jwt.config';
 import { ConfigModule } from '@nestjs/config';
-import jwtRefreshConfig from 'src/shared/config/jwt-refresh.config';
-import { JwtStrategy } from 'src/shared/auth/strategies/jwt.strategy';
-import { RefreshJwtStrategy } from 'src/shared/auth/strategies/jwt-refresh.strategy';
-import { RemoveAccentsInterface } from 'src/shared/interfaces/remove-accents.interface';
 import { SharedModule } from 'src/shared/modules/shared-module.module';
+import jwtRefreshConfig from 'src/shared/config/jwt-refresh.config';
 
 @Module({
   imports: [
@@ -19,9 +19,9 @@ import { SharedModule } from 'src/shared/modules/shared-module.module';
     ConfigModule.forFeature(jwtRefreshConfig),
     SharedModule,
   ],
-  controllers: [UserController],
+  controllers: [AuthController],
   providers: [
-    UserService,
+    AuthService,
     PrismaService,
     {
       provide: 'UserRepositoryInterface',
@@ -33,6 +33,5 @@ import { SharedModule } from 'src/shared/modules/shared-module.module';
     JwtStrategy,
     RefreshJwtStrategy,
   ],
-  exports: [UserService],
 })
-export class UserModule {}
+export class AuthModule {}

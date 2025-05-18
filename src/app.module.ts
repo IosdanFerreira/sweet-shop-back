@@ -4,7 +4,6 @@ import { AppService } from './app.service';
 import { PrismaService } from './modules/prisma/prisma.service';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
-import { JwtAuthGuard } from './shared/auth/guards/jwt-auth.guard';
 import { RoleModule } from './modules/role/role.module';
 import { UserModule } from './modules/user/user.module';
 import { ProductsModule } from './modules/products/products.module';
@@ -15,9 +14,19 @@ import { StockMovementsModule } from './modules/stock-movements/stock-movements.
 import { SaleModule } from './modules/sale/sale.module';
 import { ReportModule } from './modules/report/report.module';
 import { CashFlowModule } from './modules/cash-flow/cash-flow.module';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
+    ThrottlerModule.forRoot({
+      throttlers: [
+        {
+          ttl: 60000,
+          limit: 30,
+        },
+      ],
+    }),
     ConfigModule.forRoot(),
     UserModule,
     RoleModule,
@@ -29,15 +38,16 @@ import { CashFlowModule } from './modules/cash-flow/cash-flow.module';
     SaleModule,
     ReportModule,
     CashFlowModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [
-    AppService,
-    PrismaService,
     {
       provide: APP_GUARD,
-      useClass: JwtAuthGuard,
+      useClass: ThrottlerGuard,
     },
+    AppService,
+    PrismaService,
   ],
 })
-export class AppModule { }
+export class AppModule {}

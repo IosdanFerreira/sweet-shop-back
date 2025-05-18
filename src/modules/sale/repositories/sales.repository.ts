@@ -48,14 +48,14 @@ export class SalesRepository implements SalesRepositoryInterface {
 
           // Se o produto não existir, retorna um erro para o produto específico não encontrado
           if (!productAlreadyExists) {
-            throw new NotFoundError([
+            throw new NotFoundError('Erro ao buscar produto', [
               { property: null, message: `Produto com o ID ${product.product_id} não encontrado` },
             ]);
           }
 
           // Se a quantidade de produtos desejados for maior que a quantidade em estoque, retorna um erro
           if (product.quantity > productAlreadyExists.stock) {
-            throw new BadRequestError([
+            throw new BadRequestError('Erro ao armazenar produtos', [
               {
                 property: null,
                 message: `Quantidade de itens desejados excede a quantidade em estoque do produto com ID ${product.product_id}`,

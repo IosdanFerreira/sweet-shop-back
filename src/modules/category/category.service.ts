@@ -16,7 +16,7 @@ export class CategoryService {
 
     @Inject('PaginationInterface')
     private readonly pagination: PaginationInterface,
-  ) {}
+  ) { }
 
   async createCategory(createCategoryDto: CreateCategoryDto): Promise<IDefaultResponse<CategoryEntity>> {
     const createdCategory = await this.categoryRepository.insert(createCategoryDto);
@@ -94,7 +94,7 @@ export class CategoryService {
     await this._get(id);
 
     if (Object.keys(updateCategoryDto).length === 0) {
-      throw new BadRequestError([
+      throw new BadRequestError('Erro ao atualizar categoria', [
         {
           property: null,
           message: 'Nenhuma informação foi fornecida',
@@ -139,7 +139,7 @@ export class CategoryService {
     const category = await this.categoryRepository.findById(id);
 
     if (!category) {
-      throw new NotFoundError([
+      throw new NotFoundError('Erro ao encontrar categoria', [
         {
           property: null,
           message: 'Categoria não encontrada',

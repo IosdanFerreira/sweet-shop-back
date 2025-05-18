@@ -2,55 +2,40 @@ import { PaginationInterface, PaginationResponseInterface } from '../interfaces/
 
 export class Pagination implements PaginationInterface {
   /**
-   * Gera a paginação para a resposta padrão do sistema.
-   *
-   * @param totalItems O número total de itens em uma determinada lista.
-   * @param page O número da página atual.
-   * @param limit Número de itens por página.
-   *
-   * @returns Paginação formatada.
+   * Generate pagination metadata
+   * @param totalItems Total number of items in the collection
+   * @param page Current page number
+   * @param limit Number of items per page
+   * @returns Pagination metadata
    */
   generate(totalItems: number, page: number, limit: number): PaginationResponseInterface {
+    // Calculate the total number of pages
     const totalPages = Math.ceil(totalItems / limit);
 
-    /**
-     * Número da página anterior, caso exista.
-     *
-     * Se a página atual for a primeira, retorna null.
-     */
+    // Calculate the previous page number
     const prevPage = page > 1 ? page - 1 : null;
 
-    /**
-     * Número da próxima página, caso exista.
-     *
-     * Se a p gina atual for a  última, retorna null.
-     */
+    // Calculate the next page number
     const nextPage = page < totalPages ? page + 1 : null;
 
+    // Return the pagination metadata
     return {
-      /**
-       * Número total de itens em uma determinada lista.
-       */
+      // Total number of items in the collection
       total_items: totalItems,
-      /**
-       * Número de itens por p gina.
-       */
+
+      // Number of items per page
       limit_per_page: limit,
-      /**
-       * Número da p gina atual.
-       */
+
+      // Current page number
       current_page: page,
-      /**
-       * Número da p gina anterior, caso exista.
-       */
+
+      // Previous page number
       prev_page: prevPage,
-      /**
-       * Número da próxima p gina, caso exista.
-       */
+
+      // Next page number
       next_page: nextPage,
-      /**
-       * Número total de páginas.
-       */
+
+      // Total number of pages
       total_pages: totalPages,
     };
   }

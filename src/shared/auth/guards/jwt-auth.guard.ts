@@ -7,6 +7,7 @@ import { Reflector } from '@nestjs/core'; // Usado para acessar metadados dos de
 import { AuthGuard } from '@nestjs/passport';
 import { Observable } from 'rxjs';
 import { IS_PUBLIC_KEY } from 'src/shared/decorators/is-public.decorator';
+import { UnauthorizedError } from 'src/shared/errors/types/unauthorized.error';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
@@ -39,12 +40,8 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     // Se o resultado é uma Promise, trata possíveis erros
     const canActivatePromise = canActivate as Promise<boolean>;
 
-    return canActivatePromise.catch((error) => {
-      if (error instanceof Error) {
-        throw new UnauthorizedException('Acesso não autorizado');
-      }
-
-      throw new UnauthorizedException('Acesso não autorizado');
+    return canActivatePromise.catch(() => {
+      throw new UnauthorizedError("Token expirado ou inválido", [{ property: 'token', message: 'Acesso não autorizado' }]);
     });
   }
 }

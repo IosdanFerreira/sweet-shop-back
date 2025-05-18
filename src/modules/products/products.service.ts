@@ -21,7 +21,7 @@ export class ProductsService {
 
     private readonly categoryService: CategoryService,
     private readonly supplierService: SupplierService,
-  ) {}
+  ) { }
 
   async createProduct(createProductDto: CreateProductDto): Promise<IDefaultResponse<ProductEntity>> {
     await this.categoryService.findCategoryById(createProductDto.category_id);
@@ -103,7 +103,7 @@ export class ProductsService {
     await this._get(id);
 
     if (Object.keys(updateProductDto).length === 0) {
-      throw new BadRequestError([
+      throw new BadRequestError('Erro ao atualizar produto', [
         {
           property: null,
           message: 'Nenhuma informação foi fornecida',
@@ -148,7 +148,7 @@ export class ProductsService {
     const product = await this.productRepository.findById(id);
 
     if (!product) {
-      throw new NotFoundError([
+      throw new NotFoundError('Erro a buscar produto', [
         {
           property: null,
           message: 'Produto não encontrado',

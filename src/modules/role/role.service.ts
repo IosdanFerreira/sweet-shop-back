@@ -12,7 +12,7 @@ export class RoleService {
   constructor(
     @Inject('RoleRepositoryInterface')
     private readonly roleRepository: RoleRepositoryInterface,
-  ) {}
+  ) { }
 
   async createRole(createRoleDto: CreateRoleDto): Promise<IDefaultResponse<RoleEntity>> {
     const createdRole = await this.roleRepository.insert(createRoleDto);
@@ -66,7 +66,7 @@ export class RoleService {
     await this._get(id);
 
     if (Object.keys(updateRoleDto).length === 0) {
-      throw new BadRequestError([
+      throw new BadRequestError('Erro ao atualizar permissão', [
         {
           property: null,
           message: 'Nenhuma informação foi fornecida',
@@ -111,7 +111,7 @@ export class RoleService {
     const role = await this.roleRepository.findById(id);
 
     if (!role) {
-      throw new NotFoundError([
+      throw new NotFoundError('Erro ao buscar permissão', [
         {
           property: null,
           message: 'Permissão não encontrada',

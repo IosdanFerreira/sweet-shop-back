@@ -3,17 +3,19 @@ import { FormatDateInUsaInterface } from '../interfaces/format-date-in-usa.inter
 
 export class FormatDateInUsa implements FormatDateInUsaInterface {
   /**
-   * Formata a data do padrão brasileiro (DD/MM/YYYY) para o padrão americano (YYYY-MM-DD)
-   * @param dateInBRLFormat Data no padrão brasileiro (DD/MM/YYYY)
-   * @returns Data no padrão americano (YYYY-MM-DD)
-   * @throws BadRequestError Se a data for inválida
+   * This function takes a date in the Brazilian format DD/MM/YYYY and
+   * returns the date in the format YYYY-MM-DD. If the date is invalid, it
+   * throws a BadRequestError with a message indicating the error.
+   *
+   * @param {string} dateInBRLFormat - The date in the Brazilian format DD/MM/YYYY.
+   * @returns {string} - The date in the format YYYY-MM-DD.
    */
   execute(dateInBRLFormat: string): string {
     const [day, month, year] = dateInBRLFormat.split('/');
 
-    // Checa se a data informada em string é válida
+    // Check if the day, month and year are valid numbers
     if (isNaN(+day) || isNaN(+month) || isNaN(+year)) {
-      throw new BadRequestError([
+      throw new BadRequestError('Erro ao validar a data fornecida', [
         {
           property: null,
           message: 'Data com formato inválido, use o formato DD/MM/YYYY',
@@ -21,12 +23,12 @@ export class FormatDateInUsa implements FormatDateInUsaInterface {
       ]);
     }
 
-    // Cria a data e valida automaticamente
+    // Create a new date object with the parsed values
     const date = new Date(+year, +month - 1, +day);
 
-    // Checa se a data é válida
+    // Check if the date created is valid
     if (date.getDate() !== +day || date.getMonth() !== +month - 1 || date.getFullYear() !== +year) {
-      throw new BadRequestError([
+      throw new BadRequestError('Erro ao validar a data fornecida', [
         {
           property: null,
           message: 'Data com formato inválido, use o formato DD/MM/YYYY',
@@ -34,6 +36,7 @@ export class FormatDateInUsa implements FormatDateInUsaInterface {
       ]);
     }
 
+    // Return the date in the format YYYY-MM-DD
     return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
   }
 }

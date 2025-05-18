@@ -16,7 +16,7 @@ export class SupplierService {
 
     @Inject('PaginationInterface')
     private readonly pagination: PaginationInterface,
-  ) {}
+  ) { }
   async createSupplier(createSupplierDto: CreateSupplierDto): Promise<IDefaultResponse<SupplierEntity>> {
     const createdSupplier = await this.supplierRepository.insert(createSupplierDto);
 
@@ -94,7 +94,7 @@ export class SupplierService {
     await this._get(id);
 
     if (Object.keys(updateSupplierDto).length === 0) {
-      throw new BadRequestError([
+      throw new BadRequestError('Erro ao atualizar dados do fornecedor', [
         {
           property: null,
           message: 'Nenhuma informação foi fornecida',
@@ -139,7 +139,7 @@ export class SupplierService {
     const supplier = await this.supplierRepository.findById(id);
 
     if (!supplier) {
-      throw new NotFoundError([
+      throw new NotFoundError('Erro ao buscar dados do fornecedor', [
         {
           property: null,
           message: 'Fornecedor nao encontrado',

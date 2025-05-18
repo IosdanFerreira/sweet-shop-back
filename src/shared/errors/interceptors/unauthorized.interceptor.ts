@@ -12,8 +12,7 @@ import { UnauthorizedError } from '../types/unauthorized.error';
 
 @Injectable()
 export class UnauthorizedInterceptor
-  implements NestInterceptor<IDefaultResponse<null>>
-{
+  implements NestInterceptor<IDefaultResponse<null>> {
   intercept(
     context: ExecutionContext,
     next: CallHandler,
