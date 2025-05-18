@@ -1,9 +1,4 @@
-import {
-    ArgumentsHost,
-    Catch,
-    ExceptionFilter,
-    HttpStatus,
-} from '@nestjs/common';
+import { ArgumentsHost, Catch, ExceptionFilter, HttpStatus } from '@nestjs/common';
 
 import { Response } from 'express';
 import { BadRequestError } from '../types/bad-request.error';
@@ -11,22 +6,34 @@ import { IDefaultResponse } from 'src/shared/interfaces/default-response.interfa
 
 @Catch(BadRequestError)
 export class BadRequestExceptionFilter implements ExceptionFilter {
-    catch(exception: BadRequestError, host: ArgumentsHost) {
-        const ctx = host.switchToHttp();
-        const response = ctx.getResponse<Response>();
+  /**
+   * Handle the BadRequestError exception.
+   *
+   * This method is used to catch and handle the BadRequestError exception.
+   * It formats the response in the standard format and returns the response
+   * with the appropriate HTTP status code.
+   *
+   * @param exception The BadRequestError exception.
+   * @param host The ArgumentsHost object.
+   */
+  catch(exception: BadRequestError, host: ArgumentsHost) {
+    const ctx = host.switchToHttp();
+    const response = ctx.getResponse<Response>();
 
-        if (exception instanceof BadRequestError) {
-            const formattedResponse: IDefaultResponse<null> = {
-                status_code: HttpStatus.BAD_REQUEST,
-                success: false,
-                error_type: 'BadRequest',
-                errors: exception.errors,
-                message: exception.message,
-                data: null,
-                pagination: null,
-            };
+    // Check if the exception is a BadRequestError
+    if (exception instanceof BadRequestError) {
+      const formattedResponse: IDefaultResponse<null> = {
+        status_code: HttpStatus.BAD_REQUEST,
+        success: false,
+        error_type: 'BadRequest',
+        errors: exception.errors,
+        message: exception.message,
+        data: null,
+        pagination: null,
+      };
 
-            return response.status(HttpStatus.BAD_REQUEST).json(formattedResponse);
-        }
+      // Return the response with the appropriate HTTP status code
+      return response.status(HttpStatus.BAD_REQUEST).json(formattedResponse);
     }
+  }
 }

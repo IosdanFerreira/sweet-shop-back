@@ -13,9 +13,7 @@ import { Observable, throwError } from 'rxjs';
 import { IDefaultResponse } from 'src/shared/interfaces/default-response.interface';
 
 @Injectable()
-export class PrismaValidationInterceptor
-  implements NestInterceptor<IDefaultResponse<null>>
-{
+export class PrismaValidationInterceptor implements NestInterceptor<IDefaultResponse<null>> {
   private readonly validationPipe: ValidationPipe;
 
   constructor() {
@@ -26,23 +24,18 @@ export class PrismaValidationInterceptor
     });
   }
 
-  async intercept(
-    context: ExecutionContext,
-    next: CallHandler,
-  ): Promise<Observable<any>> {
+  async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
     const ctx = context.switchToHttp();
     const request = ctx.getRequest();
 
     try {
       await this.validationPipe.transform(request.body, {
         type: 'body',
-        metatype: context.getHandler().arguments[0]?.metatype, // Obtém o DTO associado
+        metatype: context.getHandler().arguments[0]?.metatype,
       });
     } catch (error) {
       if (error instanceof BadRequestException) {
-        const formattedErrors = this.formatValidationErrors(
-          error.getResponse() as ValidationError[],
-        );
+        const formattedErrors = this.formatValidationErrors(error.getResponse() as ValidationError[]);
         throw new BadRequestException(formattedErrors);
       }
       throw error;
@@ -50,7 +43,6 @@ export class PrismaValidationInterceptor
 
     return next.handle().pipe(
       catchError((err) => {
-        // Caso surjam outros erros, podemos processá-los aqui
         return throwError(() => err);
       }),
     );

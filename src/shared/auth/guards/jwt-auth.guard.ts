@@ -1,9 +1,5 @@
-import {
-  ExecutionContext,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
-import { Reflector } from '@nestjs/core'; // Usado para acessar metadados dos decoradores
+import { ExecutionContext, Injectable } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 import { Observable } from 'rxjs';
 import { IS_PUBLIC_KEY } from 'src/shared/decorators/is-public.decorator';
@@ -15,33 +11,48 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     super();
   }
 
-  canActivate(
-    context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<boolean> {
-    // Verifica se a rota ou o método tem o decorador `@IsPublic()`
+  /**
+   * @description
+   * This method is responsible for validating the JWT token used in the request.
+   * If the token is invalid or expired, it throws an UnauthorizedError.
+   * @param context The execution context of the request.
+   * @returns A boolean indicating whether the request is valid or not.
+   */
+  canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
+    /**
+     * If the route is marked with the @IsPublic decorator, it doesn't need to be
+     * authenticated, so we just return true.
+     */
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
       context.getClass(),
     ]);
 
-    // Se a rota é pública, permite o acesso sem passar pela autenticação
     if (isPublic) {
       return true;
     }
 
-    // Chama o método `canActivate` da classe pai para validar o JWT
+    /**
+     * If the route is not public, we need to validate the JWT token.
+     */
     const canActivate = super.canActivate(context);
 
-    // Se o resultado é boolean (síncrono), retorna diretamente
+    /**
+     * If the validation is successful, we just return the result.
+     */
     if (typeof canActivate === 'boolean') {
       return canActivate;
     }
 
-    // Se o resultado é uma Promise, trata possíveis erros
+    /**
+     * If the validation fails, we catch the error and throw an UnauthorizedError.
+     */
     const canActivatePromise = canActivate as Promise<boolean>;
 
     return canActivatePromise.catch(() => {
-      throw new UnauthorizedError("Token expirado ou inválido", [{ property: 'token', message: 'Acesso não autorizado' }]);
+      throw new UnauthorizedError('Token expirado ou inválido', [
+        { property: 'token', message: 'Acesso não autorizado' },
+      ]);
     });
   }
 }

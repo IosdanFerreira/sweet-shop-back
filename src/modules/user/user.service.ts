@@ -17,11 +17,19 @@ export class UserService {
     return await this._get(id);
   }
 
-  async updateUser(id: number, updateUserDto: UpdateUserDto) {
-    // Busca o usuário no banco pelo ID informado
+  /**
+   * Updates a user by their ID and returns a formatted response.
+   * @param id - The ID of the user to update.
+   * @param updateUserDto - The data to update the user with.
+   * @returns A promise with the formatted response indicating success.
+   */
+  async updateUser(id: number, updateUserDto: UpdateUserDto): Promise<IDefaultResponse<UserEntity>> {
+    // Retrieve the user to ensure they exist
     await this._get(id);
 
+    // Check if there is any data to update
     if (Object.keys(updateUserDto).length === 0) {
+      // If no data is provided, throw an error
       throw new BadRequestError('Erro ao atualizar dados do usuário', [
         {
           property: null,
@@ -30,10 +38,10 @@ export class UserService {
       ]);
     }
 
-    // Atualiza os dados do usuário
+    // Update the user
     const updatedUser = await this.userRepository.update(id, updateUserDto);
 
-    // Formata a resposta no formato padrão
+    // Format the response
     const formattedUser = {
       status_code: HttpStatus.OK,
       success: true,
@@ -44,36 +52,52 @@ export class UserService {
       pagination: null,
     };
 
+    // Return the formatted response
     return formattedUser;
   }
 
+  /**
+   * Deletes a user by their ID and returns a formatted response.
+   * @param id - The ID of the user to delete.
+   * @returns A promise with the formatted response indicating success.
+   */
   async deleteUser(id: number): Promise<IDefaultResponse<null>> {
-    // Busca o usuário no banco pelo ID informado
+    // Retrieve the user to ensure they exist
     await this._get(id);
 
-    // Exclui o usuário
+    // Remove the user from the repository
     await this.userRepository.remove(id);
 
-    // Formata a resposta no formato padrão
+    // Format the successful deletion response
     const formattedResponse = {
       status_code: HttpStatus.OK,
       success: true,
       error_type: null,
       errors: null,
-      message: 'Usuário excluído',
+      message: 'Usuário excluído com sucesso',
       data: null,
       pagination: null,
     };
 
+    // Return the formatted response
     return formattedResponse;
   }
 
+  /**
+   * Method to get a user by id, and returns the formatted response.
+   * @param id The id of the user to get.
+   * @returns The formatted response with the user entity.
+   */
   protected async _get(id: number): Promise<IDefaultResponse<UserEntity>> {
-    // Busca o usuário no banco pelo ID informado
+    /**
+     * Try to find the user in the database.
+     */
     const foundedUser = await this.userRepository.findById(id);
 
-    // Se o usuário nao for encontrado, retorna um erro
     if (!foundedUser) {
+      /**
+       * If the user is not found, throw a NotFoundError.
+       */
       throw new NotFoundError('Erro ao buscar usuário', [
         {
           property: null,
@@ -82,8 +106,10 @@ export class UserService {
       ]);
     }
 
-    // Formata a resposta no formato padrão
-    const formattedUser = {
+    /**
+     * Format the response with the user entity.
+     */
+    const formattedUser: IDefaultResponse<UserEntity> = {
       status_code: HttpStatus.OK,
       success: true,
       error_type: null,

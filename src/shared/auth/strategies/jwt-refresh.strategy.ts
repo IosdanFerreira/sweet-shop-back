@@ -4,7 +4,6 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigType } from '@nestjs/config';
 import jwtRefreshConfig from 'src/shared/config/jwt-refresh.config';
 import { UserPayload } from 'src/shared/interfaces/user-payload.interface';
-import { UserFromJwt } from 'src/shared/interfaces/user-from-jwt.interface';
 import { Request } from 'express';
 
 @Injectable()

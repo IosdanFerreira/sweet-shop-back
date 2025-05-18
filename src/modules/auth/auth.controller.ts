@@ -1,9 +1,9 @@
 import { Body, Controller, Get, Header, HttpCode, HttpStatus, Post, Request, Res, UseGuards } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
 import { isPublic } from 'src/shared/decorators/is-public.decorator';
-import { CreateUserDto } from '../user/dto/create-user.dto';
+import { SignUpDto } from './dto/signup.dto';
 import { AuthService } from './auth.service';
-import { SignInDto } from '../user/dto/signin.dto';
+import { SignInDto } from './dto/signin.dto';
 import { Response } from 'express';
 import { RefreshJwtAuthGuard } from 'src/shared/auth/guards/refresh-jwt-auth.guard';
 import { generateCsrfToken } from 'src/shared/auth/config/csrf.config';
@@ -20,8 +20,8 @@ export class AuthController {
   })
   @isPublic()
   @HttpCode(HttpStatus.CREATED)
-  async signup(@Body() createUserDto: CreateUserDto) {
-    return await this.authService.createUser(createUserDto);
+  async signup(@Body() signUpDto: SignUpDto) {
+    return await this.authService.signup(signUpDto);
   }
 
   // Route that performs the login

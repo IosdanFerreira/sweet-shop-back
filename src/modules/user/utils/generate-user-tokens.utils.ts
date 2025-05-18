@@ -10,7 +10,7 @@ export class generateTokens implements GenerateTokensInterface {
     private readonly jwtService: JwtService,
 
     private refreshTokenConfig: ConfigType<typeof jwtRefreshConfig>,
-  ) { }
+  ) {}
 
   /**
    * Gera os tokens de acesso e refresh_token do usuário.

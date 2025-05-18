@@ -6,7 +6,7 @@ export const { doubleCsrfProtection, generateCsrfToken } = doubleCsrf({
   cookieOptions: {
     httpOnly: true,
     sameSite: 'lax',
-    secure: false, // false para desenvolvimento local
+    secure: false, // false for local development
     maxAge: 1000 * 60 * 60 * 24, // 1 dia
   },
   getCsrfTokenFromRequest: (req) => req.headers['x-xsrf-token'] as string,
