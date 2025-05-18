@@ -15,26 +15,26 @@ export class SalesRepository implements SalesRepositoryInterface {
 
     @Inject('RemoveAccentsInterface')
     private readonly removeAccents: RemoveAccentsInterface,
-  ) { }
+  ) {}
 
   /**
-   * Registra uma nova compra
+   * Registers a new sale
    *
    * @param {CreateSaleDto[]} createSaleDto
    * @returns {Promise<SaleEntity>}
    */
   async register(createSaleDto: CreateSaleDto[]): Promise<SaleEntity> {
     return await this.prisma.$transaction(async (prisma) => {
-      // Variáveis que armazena o total da compra
+      // Variables that store the total price of the sale
       let totalSalePrice = 0;
 
-      // Variável que armazena todos os itens da compra
+      // Variable that stores all the items of the sale
       const saleItems: SaleItemEntity[] = [];
 
-      // Verifica se os produtos existem e calcula o subtotal por produto, somando ao valor total da compra
+      // Checks if the products exist and calculates the subtotal by product, adding to the total price of the sale
       await Promise.all(
         createSaleDto.map(async (product) => {
-          // Checa se o produto existe
+          // Checks if the product exists
           const productAlreadyExists = await prisma.product.findUnique({
             where: {
               id: product.product_id,
@@ -46,32 +46,32 @@ export class SalesRepository implements SalesRepositoryInterface {
             },
           });
 
-          // Se o produto não existir, retorna um erro para o produto específico não encontrado
+          // If the product does not exist, returns an error for the product not found
           if (!productAlreadyExists) {
-            throw new NotFoundError('Erro ao buscar produto', [
-              { property: null, message: `Produto com o ID ${product.product_id} não encontrado` },
+            throw new NotFoundError('Error when searching for product', [
+              { property: null, message: `Product with ID ${product.product_id} not found` },
             ]);
           }
 
-          // Se a quantidade de produtos desejados for maior que a quantidade em estoque, retorna um erro
+          // If the quantity of products desired is greater than the quantity in stock, returns an error
           if (product.quantity > productAlreadyExists.stock) {
-            throw new BadRequestError('Erro ao armazenar produtos', [
+            throw new BadRequestError('Error when storing products', [
               {
                 property: null,
-                message: `Quantidade de itens desejados excede a quantidade em estoque do produto com ID ${product.product_id}`,
+                message: `Quantity of items desired exceeds the quantity in stock of the product with ID ${product.product_id}`,
               },
             ]);
           }
 
-          // Calcula o subtotal da compra por produto
+          // Calculates the subtotal of the sale by product
           const subtotal = productAlreadyExists.selling_price * product.quantity;
 
-          // Adiciona o subtotal por produto ao valor total final da compra
+          // Adds the subtotal by product to the total price of the sale
           totalSalePrice += subtotal;
         }),
       );
 
-      // Cria um registro da compra do banco
+      // Creates a record of the sale in the database
       const sale = await prisma.sale.create({
         data: { total: totalSalePrice },
         select: {
@@ -87,7 +87,7 @@ export class SalesRepository implements SalesRepositoryInterface {
       // Create sale items and decrement the product stock
       await Promise.all(
         createSaleDto.map(async (item) => {
-          // Checa se o produto existe
+          // Checks if the product exists
           const productAlreadyExists = await prisma.product.findUnique({
             where: {
               id: item.product_id,
@@ -96,7 +96,7 @@ export class SalesRepository implements SalesRepositoryInterface {
             select: { selling_price: true },
           });
 
-          //  Cria o item da compra
+          //  Creates the item of the sale
           const saleItem = await prisma.saleItem.create({
             data: {
               sale_id: sale.id,
@@ -115,7 +115,7 @@ export class SalesRepository implements SalesRepositoryInterface {
             },
           });
 
-          // Registra a movimentação de estoque para p produto atual
+          // Registers the stock movement for the product
           await prisma.stockMovement.create({
             data: {
               product_id: item.product_id,
@@ -124,7 +124,7 @@ export class SalesRepository implements SalesRepositoryInterface {
             },
           });
 
-          // Atualiza o estoque do produto diminuindo de acordo com a quantidade que foi comprada
+          // Updates the product stock decreasing by the quantity that was bought
           const productWithUpdatedStock = await prisma.product.update({
             where: {
               id: item.product_id,
@@ -166,7 +166,7 @@ export class SalesRepository implements SalesRepositoryInterface {
             },
           });
 
-          // Adiciona o item da compra ao array
+          // Adds the item of the sale to the array
           saleItems.push({ ...saleItem, product: productWithUpdatedStock });
         }),
       );
@@ -175,6 +175,14 @@ export class SalesRepository implements SalesRepositoryInterface {
     });
   }
 
+  /**
+   * Find all sales that match the given filters.
+   * @param page The page of the pagination.
+   * @param limit The limit of items per page.
+   * @param orderBy The order of the items, either 'asc' or 'desc'.
+   * @param conditionalFilters The filters to apply to the query.
+   * @returns An array of sales that match the given filters.
+   */
   async findAll(
     page: number,
     limit: number,
@@ -236,8 +244,15 @@ export class SalesRepository implements SalesRepositoryInterface {
     });
   }
 
+  /**
+   * Counts all sales that match the given filters.
+   * @param conditionalFilters The filters to apply to the query.
+   * @returns A promise that resolves to the number of sales matching the filters.
+   */
   async countAll(conditionalFilters?: Prisma.SaleWhereInput): Promise<number> {
+    // Use Prisma to count the sales that match the given filters
     return await this.prisma.sale.count({
+      // Apply the filters to the query
       where: conditionalFilters,
     });
   }
