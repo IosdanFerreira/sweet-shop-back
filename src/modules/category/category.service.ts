@@ -30,7 +30,7 @@ export class CategoryService {
 
     // Return a formatted response with the created category.
     const formattedReturn = {
-      status_code: HttpStatus.OK,
+      status_code: HttpStatus.CREATED,
       success: true,
       error_type: null,
       errors: null,

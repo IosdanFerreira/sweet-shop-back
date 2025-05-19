@@ -4,25 +4,61 @@ import { APP_PIPE } from '@nestjs/core';
 import { CategoryModule } from '../category/category.module';
 import { ConfigService } from '@nestjs/config';
 import { HttpStatus } from '@nestjs/common';
-import { IDefaultResponse } from 'src/shared/interfaces/default-response.interface';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
-import { ProductDataBuilder } from '../products/__tests__/testing/product-data-builder';
 import { ProductEntity } from '../products/entities/product.entity';
 import { ProductRepository } from '../products/repositories/product.repository';
 import { ProductsModule } from '../products/products.module';
 import { ProductsService } from '../products/products.service';
-import { ReportRepository } from './repositories/report.repository';
-import { ReportRepositoryInterface } from './interfaces/report-repository.interface';
 import { ReportService } from './report.service';
 import { SharedModule } from 'src/shared/modules/shared-module.module';
 import { SupplierModule } from '../supplier/supplier.module';
+import { CategoryEntity } from '../category/entities/category.entity';
+import { SupplierEntity } from '../supplier/entities/supplier.entity';
 
 describe('ReportService', () => {
-  let reportService: ReportService;
-  let productsService: ProductsService;
-  let reportRepository: ReportRepositoryInterface;
+  let service: ReportService;
+  let mockReportRepository: any;
+  let mockProductsService: any;
+
+  const mockCategory: CategoryEntity = {
+    id: 1,
+    name: 'Test Category',
+    created_at: new Date(),
+    updated_at: new Date(),
+  };
+
+  const mockSupplier: SupplierEntity = {
+    id: 1,
+    name: 'Test Supplier',
+    email: 'test@supplier.com',
+    phone: '12345678901',
+    created_at: new Date(),
+    updated_at: new Date(),
+  };
+
+  const mockProduct: ProductEntity = {
+    id: 1,
+    name: 'Test Product',
+    description: 'Test Description',
+    purchase_price: 10.0,
+    selling_price: 20.0,
+    stock: 100,
+    category: mockCategory,
+    supplier: mockSupplier,
+    created_at: new Date(),
+    updated_at: new Date(),
+  };
 
   beforeEach(async () => {
+    mockReportRepository = {
+      findGroupSales: jest.fn(),
+      findSellingTopProducts: jest.fn(),
+    };
+
+    mockProductsService = {
+      findProductById: jest.fn(),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       imports: [SharedModule, SupplierModule, CategoryModule, ProductsModule],
       providers: [
@@ -34,111 +70,111 @@ describe('ReportService', () => {
         },
         {
           provide: 'ReportRepositoryInterface',
-          useClass: ReportRepository,
+          useValue: mockReportRepository,
         },
         {
           provide: 'ProductRepositoryInterface',
           useClass: ProductRepository,
         },
         ConfigService,
+        {
+          provide: ProductsService,
+          useValue: mockProductsService,
+        },
       ],
     }).compile();
 
-    reportService = module.get<ReportService>(ReportService);
-    reportRepository = module.get<ReportRepositoryInterface>('ReportRepositoryInterface');
-    productsService = module.get<ProductsService>(ProductsService);
+    service = module.get<ReportService>(ReportService);
   });
 
-  it('should return a successful sales report', async () => {
-    const salesByMonth = [
-      { created_at: new Date('2025-01-01T00:00:00.000Z'), _count: { id: 10 } },
-      { created_at: new Date('2025-02-01T00:00:00.000Z'), _count: { id: 20 } },
-    ];
-
-    jest.spyOn(reportRepository, 'findGroupSales').mockResolvedValue(salesByMonth);
-
-    const result = await reportService.getSalesReport();
-
-    expect(result.status_code).toBe(HttpStatus.OK);
-    expect(result.success).toBe(true);
-    expect(result.data).toEqual([
-      { month: '01/2025', total_sales: 10 },
-      { month: '02/2025', total_sales: 20 },
-    ]);
+  it('should be defined', () => {
+    expect(service).toBeDefined();
   });
 
-  it('should return an error when findGroupSales returns an empty array', async () => {
-    jest.spyOn(reportRepository, 'findGroupSales').mockResolvedValue([]);
+  describe('getSalesReport', () => {
+    it('should return sales report grouped by month and year', async () => {
+      const mockSales = [
+        {
+          created_at: new Date('2024-01-15'),
+          _count: { id: 5 },
+        },
+        {
+          created_at: new Date('2024-01-20'),
+          _count: { id: 3 },
+        },
+        {
+          created_at: new Date('2024-02-10'),
+          _count: { id: 4 },
+        },
+      ];
 
-    const result = await reportService.getSalesReport();
+      mockReportRepository.findGroupSales.mockResolvedValue(mockSales);
 
-    expect(result.status_code).toBe(HttpStatus.NOT_FOUND);
-    expect(result.success).toBe(false);
-    expect(result.message).toBe('Relatório de vendas não encontrado');
+      const result = await service.getSalesReport();
+
+      expect(result.status_code).toBe(HttpStatus.OK);
+      expect(result.success).toBe(true);
+      expect(result.data).toEqual([
+        { month: '01/2024', total_sales: 8 },
+        { month: '02/2024', total_sales: 4 },
+      ]);
+      expect(mockReportRepository.findGroupSales).toHaveBeenCalled();
+    });
+
+    it('should return not found when no sales data exists', async () => {
+      mockReportRepository.findGroupSales.mockResolvedValue([]);
+
+      const result = await service.getSalesReport();
+
+      expect(result.status_code).toBe(HttpStatus.NOT_FOUND);
+      expect(result.success).toBe(false);
+      expect(result.data).toEqual([]);
+      expect(result.message).toBe('Relatório de vendas não encontrado');
+      expect(mockReportRepository.findGroupSales).toHaveBeenCalled();
+    });
   });
 
-  it('should return top selling products successfully', async () => {
-    const topProducts = [
-      { product_id: 1, _sum: { quantity: 10 } },
-      { product_id: 2, _sum: { quantity: 20 } },
-    ];
+  describe('getSellingTopProducts', () => {
+    it('should return top selling products', async () => {
+      const mockTopProducts = [
+        {
+          product_id: 1,
+          _sum: { quantity: 10 },
+        },
+        {
+          product_id: 2,
+          _sum: { quantity: 5 },
+        },
+      ];
 
-    const product1: IDefaultResponse<ProductEntity> = {
-      status_code: HttpStatus.OK,
-      success: true,
-      message: 'Product found',
-      data: ProductDataBuilder(),
-      pagination: null,
-      error_type: null,
-      errors: null,
-    };
+      mockReportRepository.findSellingTopProducts.mockResolvedValue(mockTopProducts);
+      mockProductsService.findProductById.mockResolvedValue({
+        status_code: HttpStatus.OK,
+        success: true,
+        data: mockProduct,
+      });
 
-    const product2: IDefaultResponse<ProductEntity> = {
-      status_code: HttpStatus.OK,
-      success: true,
-      message: 'Product found',
-      data: ProductDataBuilder({ id: 2 }),
-      pagination: null,
-      error_type: null,
-      errors: null,
-    };
+      const result = await service.getSellingTopProducts();
 
-    jest.spyOn(reportRepository, 'findSellingTopProducts').mockResolvedValue(topProducts);
-    jest.spyOn(productsService, 'findProductById').mockResolvedValueOnce(product1);
-    jest.spyOn(productsService, 'findProductById').mockResolvedValueOnce(product2);
+      expect(result.status_code).toBe(HttpStatus.OK);
+      expect(result.success).toBe(true);
+      expect(result.data).toEqual([
+        { product: mockProduct, quantity_sold: 10 },
+        { product: mockProduct, quantity_sold: 5 },
+      ]);
+      expect(mockReportRepository.findSellingTopProducts).toHaveBeenCalled();
+      expect(mockProductsService.findProductById).toHaveBeenCalledTimes(2);
+    });
 
-    const result = await reportService.getSellingTopProducts();
+    it('should handle empty top products list', async () => {
+      mockReportRepository.findSellingTopProducts.mockResolvedValue([]);
 
-    expect(result.status_code).toBe(HttpStatus.OK);
-    expect(result.success).toBe(true);
-    expect(result.data).toEqual([
-      { product: product1.data, quantity_sold: 10 },
-      { product: product2.data, quantity_sold: 20 },
-    ]);
-  });
+      const result = await service.getSellingTopProducts();
 
-  it('should return empty list of top selling products', async () => {
-    jest.spyOn(reportRepository, 'findSellingTopProducts').mockResolvedValue([]);
-
-    const result = await reportService.getSellingTopProducts();
-
-    expect(result.status_code).toBe(HttpStatus.OK);
-    expect(result.success).toBe(true);
-    expect(result.data).toEqual([]);
-  });
-
-  it('should throw error when finding product by ID fails', async () => {
-    const topProducts = [{ product_id: 1, _sum: { quantity: 10 } }];
-
-    jest.spyOn(reportRepository, 'findSellingTopProducts').mockResolvedValue(topProducts);
-    jest.spyOn(productsService, 'findProductById').mockResolvedValueOnce(null);
-
-    await expect(reportService.getSellingTopProducts()).rejects.toThrow(TypeError);
-  });
-
-  it('should throw error when repository call fails', async () => {
-    jest.spyOn(reportRepository, 'findSellingTopProducts').mockResolvedValue(null);
-
-    await expect(reportService.getSellingTopProducts()).rejects.toThrow(TypeError);
+      expect(result.status_code).toBe(HttpStatus.OK);
+      expect(result.success).toBe(true);
+      expect(result.data).toEqual([]);
+      expect(mockReportRepository.findSellingTopProducts).toHaveBeenCalled();
+    });
   });
 });

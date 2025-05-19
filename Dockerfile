@@ -19,5 +19,8 @@ RUN chmod +x /home/node/app/.docker/entrypoint.sh
 # Define o diretório de trabalho
 WORKDIR /home/node/app
 
+# Copia os arquivos de ambiente
+COPY .env.test .env.test
+
 # Define o node como usuário do projeto
 USER node

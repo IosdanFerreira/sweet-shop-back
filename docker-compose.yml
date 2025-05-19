@@ -10,6 +10,9 @@ services:
       - .:/home/node/app
     depends_on:
       - db
+      - db_test
+    networks:
+      - app-network
   db:
     build: .docker/postgres
     container_name: sweet-shop-back-db
@@ -24,3 +27,24 @@ services:
       - PGTZ=America/Sao_Paulo
       - POSTGRES_PASSWORD=sweet-shop-back-secret
       - POSTGRES_DB=sweet-shop-back
+    networks:
+      - app-network
+  
+  db_test:
+    image: postgres:16
+    container_name: sweet-shop-back-db-test
+    restart: always
+    expose:
+      - '5432'
+    environment:
+      - POSTGRES_USER=test
+      - POSTGRES_PASSWORD=test
+      - POSTGRES_DB=sweet-shop-back-test
+    volumes:
+      - .docker/dbdata-test:/var/lib/postgresql/data-test
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
