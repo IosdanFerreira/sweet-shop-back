@@ -81,6 +81,7 @@ Aplicação backend construída com NestJS, projetada para gerenciar dados relac
     REFRESH_JWT_SECRET="refresh_jwt_secret"
     REFRESH_JWT_EXPIRES_IN_SECONDS=604800
     REFRESH_JWT_EXPIRES_IN_LITERAL_STRING_VALUE='7d'
+    CSRF_SECRET=default-strong-secret-32-characters-at-least
     ```
 
 3.  **Conceda as permissões:**
